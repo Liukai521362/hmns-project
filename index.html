@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>机器增强的人机混合神经系统 · 复杂系统工程课题</title>
+<meta name="description" content="吉林大学车辆工程 · 复杂系统工程课程小组课题：机器增强的人机混合神经系统的六层体系梳理、系统解剖与作业提交。">
+<!-- 部署后请把 REPO_USER / REPO_NAME 填成你的 GitHub 用户名与仓库名，页面里的仓库跳转会随之生效 -->
+<meta name="repo-user" content="">
+<meta name="repo-name" content="">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23101a17'/%3E%3Cpath d='M6 16h4l3-7 4 14 3-7h4' stroke='%23146b5a' stroke-width='2.4' fill='none' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Serif+SC:wght@500;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* ===== 01 tokens ===== */
+:root{
+  --ink:#101a17;
+  --paper:#f3f5f2;
+  --paper-2:#e7ebe6;
+  --line:#c6cfc8;
+  --line-strong:#9aa8a1;
+  --muted:#5b6b64;
+  --bio:#146b5a;       /* 生物神经层 */
+  --bio-soft:#d7e8e2;
+  --brass:#8f6412;     /* 接口/电极层 */
+  --brass-soft:#efe4cb;
+  --machine:#274c7c;   /* 机器算法层 */
+  --machine-soft:#d8e1ed;
+  --alert:#a93a2c;
+  --serif:"Noto Serif SC","Songti SC",serif;
+  --sans:"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+  --rail:196px;
+  --maxw:1180px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:var(--sans);font-weight:400;font-size:16px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+  background-image:
+    linear-gradient(to right,rgba(16,26,23,.045) 1px,transparent 1px),
+    linear-gradient(to bottom,rgba(16,26,23,.045) 1px,transparent 1px);
+  background-size:64px 64px;
+}
+img{max-width:100%}
+a{color:var(--machine);text-decoration:none;border-bottom:1px solid rgba(39,76,124,.3)}
+a:hover{border-bottom-color:var(--machine)}
+::selection{background:var(--bio);color:#fff}
+:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+
+/* ===== 02 topbar ===== */
+.topbar{
+  position:sticky;top:0;z-index:40;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:12px clamp(16px,4vw,48px);
+  background:rgba(243,245,242,.92);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--line);
+}
+.brand{display:flex;align-items:baseline;gap:10px;font-family:var(--mono);font-size:12.5px;letter-spacing:.02em;color:var(--muted)}
+.brand b{font-family:var(--sans);font-weight:700;font-size:13.5px;color:var(--ink);letter-spacing:0}
+.brand .dot{width:6px;height:6px;background:var(--bio);border-radius:50%;align-self:center}
+.nav{display:flex;gap:2px;flex-wrap:wrap}
+.nav a{
+  font-size:13px;padding:6px 10px;border:0;border-radius:2px;color:var(--muted);
+  font-family:var(--mono);letter-spacing:.01em;
+}
+.nav a:hover{background:var(--paper-2);color:var(--ink)}
+.nav a.on{color:var(--ink);background:var(--paper-2);box-shadow:inset 0 -2px 0 var(--bio)}
+.navtoggle{display:none;background:none;border:1px solid var(--line);border-radius:2px;padding:6px 10px;font-family:var(--mono);font-size:12px;cursor:pointer;color:var(--ink)}
+
+/* ===== 03 shell ===== */
+.shell{max-width:var(--maxw);margin:0 auto;padding:0 clamp(16px,4vw,48px)}
+.hero{padding:clamp(48px,8vw,96px) 0 clamp(32px,5vw,56px)}
+.kicker{
+  display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;
+  color:var(--bio);letter-spacing:.04em;margin:0 0 22px;
+}
+.kicker span.bar{display:block;width:28px;height:1px;background:var(--bio)}
+h1.hero-title{
+  font-family:var(--serif);font-weight:900;
+  font-size:clamp(34px,6.4vw,68px);line-height:1.08;letter-spacing:-.01em;
+  margin:0 0 8px;
+}
+h1.hero-title em{font-style:normal;color:var(--bio);display:block;font-size:clamp(20px,3.2vw,30px);font-weight:600;letter-spacing:.02em;margin-top:14px;line-height:1.5}
+.hero-sub{max-width:58ch;color:var(--muted);font-size:15.5px;line-height:1.9;margin:20px 0 0}
+.hero-meta{
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;
+  margin:44px 0 0;border-top:1px solid var(--line-strong);
+}
+.hero-meta div{padding:14px 16px 14px 0;border-right:1px solid var(--line)}
+.hero-meta div:last-child{border-right:0}
+.hero-meta dt{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.06em;margin:0 0 6px}
+.hero-meta dd{margin:0;font-size:13.5px;line-height:1.5;font-weight:500}
+
+/* ===== 04 section frame ===== */
+section.blk{padding:clamp(40px,6vw,76px) 0;border-top:1px solid var(--line)}
+.blk-head{display:grid;grid-template-columns:var(--rail) minmax(0,1fr);gap:clamp(16px,3vw,40px);margin-bottom:34px}
+.blk-no{font-family:var(--mono);font-size:12px;color:var(--muted);line-height:1.6}
+.blk-no b{display:block;font-family:var(--serif);font-size:34px;font-weight:700;color:var(--ink);line-height:1}
+.blk-no i{display:block;font-style:normal;margin-top:8px;letter-spacing:.06em}
+.blk-title{font-family:var(--serif);font-weight:700;font-size:clamp(22px,3.2vw,32px);line-height:1.3;margin:0 0 10px}
+.blk-lead{margin:0;color:var(--muted);max-width:64ch;font-size:15px}
+.blk-body{display:grid;grid-template-columns:var(--rail) minmax(0,1fr);gap:clamp(16px,3vw,40px)}
+.blk-body .side{border-top:1px solid var(--line);padding-top:12px;font-family:var(--mono);font-size:11.5px;color:var(--muted);line-height:1.9;letter-spacing:.02em}
+.blk-body .side p{margin:0 0 8px}
+.blk-body .main{min-width:0}
+
+/* ===== 05 level ladder ===== */
+.ladder{
+  display:grid;grid-template-columns:repeat(6,minmax(0,1fr));
+  gap:0;border:1px solid var(--line-strong);background:#fff;
+}
+.rung{
+  appearance:none;border:0;border-right:1px solid var(--line);background:transparent;
+  padding:16px 12px 14px;text-align:left;cursor:pointer;font-family:var(--sans);
+  display:flex;flex-direction:column;gap:6px;position:relative;transition:background .18s;
+}
+.rung:last-child{border-right:0}
+.rung:hover{background:var(--paper)}
+.rung .lv{font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:.08em}
+.rung .zh{font-size:14.5px;font-weight:700;line-height:1.3}
+.rung .en{font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:.02em}
+.rung::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--line);transition:height .18s}
+.rung[aria-selected="true"]{background:#fff}
+.rung[aria-selected="true"]::after{height:6px;background:var(--ink)}
+.rung[aria-selected="true"] .lv{color:var(--ink)}
+.ladder-legend{
+  display:flex;flex-wrap:wrap;gap:18px;margin:12px 0 0;font-family:var(--mono);
+  font-size:11px;color:var(--muted)
+}
+.ladder-legend span{display:inline-flex;align-items:center;gap:6px}
+.ladder-legend i{width:10px;height:10px;display:inline-block}
+
+.panel{
+  margin-top:22px;border:1px solid var(--line-strong);background:#fff;
+  display:grid;grid-template-columns:minmax(0,1fr) 260px;
+}
+.panel-main{padding:clamp(18px,2.4vw,28px);border-right:1px solid var(--line)}
+.panel-tag{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--muted);margin:0 0 8px}
+.panel-h{font-family:var(--serif);font-size:clamp(19px,2.4vw,24px);font-weight:700;margin:0 0 12px;line-height:1.4}
+.panel-p{margin:0;font-size:14.5px;line-height:1.85;color:#26332f;max-width:56ch}
+.panel-list{margin:14px 0 0;padding:0;list-style:none;display:grid;gap:7px}
+.panel-list li{
+  font-size:13.5px;line-height:1.6;display:grid;grid-template-columns:14px minmax(0,1fr);gap:6px;
+}
+.panel-list li::before{content:"—";font-family:var(--mono);color:var(--line-strong)}
+.panel-aside{padding:clamp(16px,2vw,22px);background:var(--paper);font-size:12.5px;line-height:1.85}
+.panel-aside h4{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:#44554d;margin:0 0 8px;font-weight:500}
+.panel-aside p{margin:0 0 14px;color:#33413c}
+.panel-aside p:last-child{margin-bottom:0}
+.panel-foot{grid-column:1/-1;border-top:1px solid var(--line);padding:12px clamp(16px,2vw,22px);display:flex;gap:10px;flex-wrap:wrap;background:#fff}
+
+.btn{
+  appearance:none;font-family:var(--sans);font-size:13px;font-weight:500;line-height:1;
+  padding:11px 16px;border:1px solid var(--ink);background:var(--ink);color:var(--paper);
+  border-radius:2px;cursor:pointer;transition:opacity .15s,transform .15s;
+}
+.btn:hover{opacity:.84}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line-strong)}
+.btn.ghost:hover{background:var(--paper);opacity:1}
+.btn:active{transform:translateY(1px)}
+
+/* ===== 06 cards / 三层架构 ===== */
+.layers{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;border:1px solid var(--line-strong);background:#fff}
+.layer{padding:clamp(24px,2.6vw,32px) clamp(16px,2vw,22px) clamp(18px,2.4vw,26px);border-right:1px solid var(--line);position:relative}
+.layer:last-child{border-right:0}
+.layer .band{position:absolute;top:0;left:0;right:0;height:5px}
+.layer.bio .band{background:var(--bio)}
+.layer.ifc .band{background:var(--brass)}
+.layer.mch .band{background:var(--machine)}
+.layer h3{font-family:var(--sans);font-size:15px;font-weight:700;margin:0 0 4px}
+.layer .en{font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:.04em}
+.layer p{font-size:13.5px;line-height:1.8;color:#33413c;margin:12px 0 0}
+.layer ol{margin:12px 0 0;padding-left:18px;font-size:13px;line-height:1.75;color:#33413c}
+.layer ol li{margin-bottom:3px}
+
+.grid-2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px}
+.tri{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;border:1px solid var(--line-strong);background:#fff;margin-top:22px}
+.tri > div{padding:clamp(16px,2vw,22px);border-right:1px solid var(--line)}
+.tri > div:last-child{border-right:0}
+.tri .n{font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:.08em;margin-bottom:8px}
+.tri h4{font-family:var(--serif);font-size:16px;font-weight:700;margin:0 0 8px;line-height:1.45}
+.tri p{margin:0;font-size:13.5px;line-height:1.8;color:#33413c}
+.factbox{border:1px solid var(--line);background:#fff;padding:clamp(16px,2vw,22px)}
+.factbox h4{font-family:var(--serif);font-size:16.5px;font-weight:700;margin:0 0 8px}
+.factbox p{margin:0;font-size:13.5px;line-height:1.8;color:#33413c}
+
+/* ===== 07 loop diagram ===== */
+.loopwrap{border:1px solid var(--line-strong);background:#fff;padding:clamp(12px,2vw,20px) clamp(12px,2vw,20px) 8px}
+.loopwrap svg{display:block;width:100%;height:auto}
+.loop-note{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;border-top:1px solid var(--line);margin-top:6px}
+.loop-note div{padding:12px 14px;border-right:1px solid var(--line);font-size:12.5px;line-height:1.7;color:#33413c}
+.loop-note div:last-child{border-right:0}
+.loop-note b{display:block;font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:.06em;margin-bottom:4px;font-weight:500}
+
+/* ===== 08 table ===== */
+.tblhint{display:none}
+.tblwrap{border:1px solid var(--line-strong);background:#fff;overflow-x:auto}
+.tblwrap::-webkit-scrollbar{height:6px}
+.tblwrap::-webkit-scrollbar-thumb{background:var(--line-strong)}
+table{width:100%;border-collapse:collapse;table-layout:fixed;min-width:620px}
+th,td{text-align:left;vertical-align:top;padding:11px 12px;border-bottom:1px solid var(--line);font-size:13px;line-height:1.6}
+th{font-family:var(--mono);font-size:11px;letter-spacing:.05em;color:var(--muted);font-weight:500;background:var(--paper);border-bottom-color:var(--line-strong)}
+tbody tr:last-child td{border-bottom:0}
+td code,.mono{font-family:var(--mono);font-size:12px}
+.pill{display:inline-block;font-family:var(--mono);font-size:10.5px;padding:2px 7px;border-radius:1px;line-height:1.6;letter-spacing:.02em}
+.pill.wait{background:var(--brass-soft);color:#6b4a08}
+.pill.done{background:var(--bio-soft);color:var(--bio)}
+.pill.plan{background:var(--paper-2);color:var(--muted)}
+
+/* ===== 09 timeline ===== */
+.tl{display:grid;grid-template-columns:112px 22px minmax(0,1fr);row-gap:0}
+.tl .t{font-family:var(--mono);font-size:11.5px;color:var(--muted);padding:14px 12px 0 0;text-align:right;letter-spacing:.02em;white-space:nowrap}
+.tl .axis{position:relative;display:flex;justify-content:center}
+.tl .axis::before{content:"";position:absolute;top:0;bottom:0;left:50%;width:1px;background:var(--line-strong);transform:translateX(-.5px)}
+.tl .dot{position:relative;z-index:1;width:9px;height:9px;margin-top:16px;background:var(--paper);border:1px solid var(--ink);border-radius:50%}
+.tl .dot.now{background:var(--bio);border-color:var(--bio)}
+.tl .c{padding:12px 0 20px 14px}
+.tl .c h4{margin:0 0 3px;font-size:14.5px;font-weight:700}
+.tl .c p{margin:0;font-size:13px;line-height:1.7;color:var(--muted)}
+.tl .c .axis-end{position:absolute;bottom:0;left:50%;width:1px;height:1px}
+
+/* ===== 10 footer / toast ===== */
+footer{border-top:1px solid var(--line-strong);padding:36px 0 56px;margin-top:0}
+.foot{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:24px;align-items:start}
+.foot p{margin:0 0 8px;font-size:12.5px;color:var(--muted);line-height:1.8;max-width:62ch}
+.foot .mono{color:var(--ink)}
+.toast{
+  position:fixed;left:50%;bottom:26px;transform:translate(-50%,14px);
+  background:var(--ink);color:var(--paper);font-size:13px;line-height:1.5;
+  padding:11px 18px;border-radius:2px;max-width:min(90vw,520px);
+  opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:60;
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* ===== 信号流动画 ===== */
+.loopwide{margin-top:28px}
+.loop-ctrls{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;justify-content:flex-end}
+.loopwrap svg .sig{stroke-dasharray:0 0}
+.loopwrap svg.playing .sig{stroke-dasharray:10 7;animation:dashflow .8s linear infinite}
+@keyframes dashflow{from{stroke-dashoffset:0}to{stroke-dashoffset:-17}}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+
+/* ===== 11 responsive ===== */
+@media (max-width:960px){
+  .hero-meta{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .hero-meta div:nth-child(2){border-right:0}
+  .hero-meta div:nth-child(3),.hero-meta div:nth-child(4){border-top:1px solid var(--line)}
+  .blk-head,.blk-body{grid-template-columns:1fr;gap:14px}
+  .blk-no b{display:inline;font-size:22px}
+  .blk-no i{display:inline;margin-left:8px}
+  .ladder{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .rung:nth-child(3n){border-right:0}
+  .rung:nth-child(-n+3){border-bottom:1px solid var(--line)}
+  .panel{grid-template-columns:1fr}
+  .panel-main{border-right:0;border-bottom:1px solid var(--line)}
+  .layers{grid-template-columns:1fr}
+  .layer{border-right:0;border-bottom:1px solid var(--line)}
+  .layer:last-child{border-bottom:0}
+  .grid-2{grid-template-columns:1fr}
+  .tri{grid-template-columns:1fr}
+  .tri > div{border-right:0;border-bottom:1px solid var(--line)}
+  .tri > div:last-child{border-bottom:0}
+  .loop-note{grid-template-columns:1fr}
+  .loop-note div{border-right:0;border-bottom:1px solid var(--line)}
+  .loop-note div:last-child{border-bottom:0}
+  .foot{grid-template-columns:1fr}
+  .nav{display:none;position:absolute;top:100%;left:0;right:0;background:var(--paper);border-bottom:1px solid var(--line-strong);padding:8px;flex-direction:column}
+  .nav.open{display:flex}
+  .topbar{position:relative;top:auto}
+  .navtoggle{display:block}
+}
+@media (max-width:960px){
+  .loopwrap{overflow-x:auto}
+  .loopwrap svg{min-width:860px}
+  .loop-ctrls{justify-content:flex-start}
+  .btn{min-height:44px;display:inline-flex;align-items:center}
+  .navtoggle{min-height:44px;min-width:52px}
+}
+@media (max-width:560px){
+  .ladder{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .rung:nth-child(3n){border-right:1px solid var(--line)}
+  .rung:nth-child(2n){border-right:0}
+  .rung:nth-child(-n+4){border-bottom:1px solid var(--line)}
+  .tl{grid-template-columns:84px 18px minmax(0,1fr)}
+  .hero-sub{font-size:15px}
+}
+@media (max-width:640px){
+  .hero-sub{font-size:15.5px}
+  .blk-lead,.panel-p,.factbox p,.tri p,.layer p,.tl .c p,.loop-note div{font-size:14.5px}
+  .panel-list li{font-size:14px}
+  .side p,.panel-aside p{font-size:14px}
+  .foot p{font-size:13.5px}
+  .tblhint{display:block;font-family:var(--mono);font-size:11px;color:var(--muted);margin:0 0 6px}
+  table{min-width:560px}
+  .tl{grid-template-columns:84px 18px minmax(0,1fr)}
+  .tri .n,.panel-tag,.kv{font-size:11.5px}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *{transition:none!important;animation:none!important}
+}
+@media print{
+  .topbar,.navtoggle,.panel-foot{display:none}
+  body{background:#fff}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand"><span class="dot"></span><b>人机混合神经系统</b><span>/ 复杂系统工程 2026</span></div>
+  <button class="navtoggle" id="navToggle" aria-expanded="false" aria-controls="nav">目录</button>
+  <nav class="nav" id="nav" aria-label="页面目录">
+    <a href="#overview">总览</a>
+    <a href="#levels">六层梳理</a>
+    <a href="#anatomy">系统解剖</a>
+    <a href="#loop">信号闭环</a>
+    <a href="#metrics">验证指标</a>
+    <a href="#deliverables">作业提交</a>
+    <a href="#timeline">进度</a>
+  </nav>
+</div>
+
+<div class="shell">
+
+<!-- ===== 视图：hero ===== -->
+<header class="hero" id="top">
+  <p class="kicker"><span class="bar"></span>吉林大学 · 车辆工程 · 复杂系统工程课程课题</p>
+  <h1 class="hero-title">机器增强的人机<br>混合神经系统<em>Machine-augmented human–machine hybrid neural system</em></h1>
+  <p class="hero-sub">把“人”与“机”接成一条完整的信息回路：生物神经负责意图与感觉，人工器件负责采集、解码与刺激，执行机构负责把意图变成动作。本页按课程的六层体系——任务、体系 SoS、整机、系统、子系统、模块——逐层交代该系统处在什么位置、由什么组成、靠什么闭环。</p>
+
+  <dl class="hero-meta">
+    <div><dt>课程</dt><dd>复杂系统工程 Complex Systems Engineering</dd></div>
+    <div><dt>小组课题</dt><dd>机器增强的人机混合神经系统</dd></div>
+    <div><dt>所选层级</dt><dd>第四层 · 系统 Systems</dd></div>
+    <div><dt>提交方式</dt><dd>本页 + GitHub 仓库 Issues</dd></div>
+  </dl>
+</header>
+
+<!-- ===== 视图：01 总览 ===== -->
+<section class="blk" id="overview">
+  <div class="blk-head">
+    <div class="blk-no"><b>01</b><i>OVERVIEW</i></div>
+    <div>
+      <h2 class="blk-title">先回答课堂上那个问题：我们选的“系统”在第几层</h2>
+      <p class="blk-lead">课程要求先定位，再补全上下层要素，最后串联成一段完整的阐述。这一节只做定位与判断，不做展开。</p>
+    </div>
+  </div>
+  <div class="blk-body">
+    <aside class="side">
+      <p>定位依据</p>
+      <p>一个对象能否称作“系统”，取决于它是否由相互关联的部件组成、并有明确边界与功能。</p>
+      <p>人机混合神经系统有输入（神经电信号）、有处理（解码与决策）、有输出（刺激与执行指令），边界可画，故独立成系统。</p>
+    </aside>
+    <div class="main">
+      <div class="grid-2">
+        <div class="factbox">
+          <h4>它处在第四层：系统 Systems</h4>
+          <p>整机是“被增强的人”，这个系统是整机内部负责“意图—动作—感觉”信息转换的那一层。它上面还有任务与体系 SoS 决定它为什么存在，下面还有子系统与模块决定它怎么实现。课堂问题里的“上、中、下各层要素”，指的就是这六层中的其余五层。</p>
+        </div>
+        <div class="factbox">
+          <h4>它为什么不是“整机”</h4>
+          <p>整机回答的是“靠什么载体完成任务”，系统回答的是“载体内部哪一套功能在完成任务”。同一个人可以同时装着神经接口、外骨骼和车载线控，整机只有一个，而这套神经系统是整机中承担信息转换的那一层，层级不能混。</p>
+        </div>
+      </div>
+
+      <div class="tri">
+        <div>
+          <p class="n">判断一</p>
+          <h4>边界画在皮肤之外，还是之内</h4>
+          <p>系统边界包含人体内的神经通路，也包含皮肤之外的电极、无线链路与解码程序。感觉反馈回到人身上才算闭环闭合，因此边界必须跨过生物与器件的接缝。</p>
+        </div>
+        <div>
+          <p class="n">判断二</p>
+          <h4>“混合”指双向，不是单向上传</h4>
+          <p>只把脑信号读出来驱动机械臂，是单向读取；本课题要求机器把力、位、触觉的结果编码成刺激返回神经系统，形成两条方向相反的通路。</p>
+        </div>
+        <div>
+          <p class="n">判断三</p>
+          <h4>能用系统工程的方法拆</h4>
+          <p>它具备需求—功能—架构—接口—验证这条完整链条：任务给需求，体系给运行环境，整机给约束，子系统划分给接口，模块给实现单元。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 视图：02 六层梳理 ===== -->
+<section class="blk" id="levels">
+  <div class="blk-head">
+    <div class="blk-no"><b>02</b><i>LEVELS</i></div>
+    <div>
+      <h2 class="blk-title">六个层级，逐层补全要素</h2>
+      <p class="blk-lead">点选任意一层，看这一层的定义、需要填进去的要素，以及它和我们这组的对应关系。上层给需求与约束，下层给实现与接口，顺序不能反。</p>
+    </div>
+  </div>
+  <div class="blk-body">
+    <aside class="side">
+      <p>阅读顺序</p>
+      <p>自左向右是自上而下：任务定义为什么做，模块定义由什么做。</p>
+      <p>点击阶梯可切换，下方同时显示该层要素。</p>
+      <p>颜色对应第三节的三层架构。</p>
+    </aside>
+    <div class="main">
+      <div class="ladder" id="ladder" role="tablist" aria-label="六层体系">
+        <button class="rung" role="tab" aria-selected="true" data-lv="0"><span class="lv">LV01</span><span class="zh">任务</span><span class="en">Mission</span></button>
+        <button class="rung" role="tab" aria-selected="false" data-lv="1"><span class="lv">LV02</span><span class="zh">体系 SoS</span><span class="en">System of Systems</span></button>
+        <button class="rung" role="tab" aria-selected="false" data-lv="2"><span class="lv">LV03</span><span class="zh">整机</span><span class="en">Vehicles</span></button>
+        <button class="rung" role="tab" aria-selected="false" data-lv="3"><span class="lv">LV04</span><span class="zh">系统</span><span class="en">Systems</span></button>
+        <button class="rung" role="tab" aria-selected="false" data-lv="4"><span class="lv">LV05</span><span class="zh">子系统</span><span class="en">Sub-systems</span></button>
+        <button class="rung" role="tab" aria-selected="false" data-lv="5"><span class="lv">LV06</span><span class="zh">模块</span><span class="en">Modules</span></button>
+      </div>
+      <p class="ladder-legend"><span><i style="background:var(--bio)"></i>生物神经侧</span><span><i style="background:var(--brass)"></i>接口与器件侧</span><span><i style="background:var(--machine)"></i>算法与执行侧</span></p>
+
+      <div class="panel" id="panel">
+        <div class="panel-main">
+          <p class="panel-tag" id="pTag">LV01 / MISSION</p>
+          <h3 class="panel-h" id="pH"></h3>
+          <p class="panel-p" id="pP"></p>
+          <ul class="panel-list" id="pList"></ul>
+        </div>
+        <div class="panel-aside">
+          <h4>本层要回答的问题</h4>
+          <p id="pQ"></p>
+          <h4>上 / 下游关系</h4>
+          <p id="pRel"></p>
+        </div>
+        <div class="panel-foot">
+          <button class="btn ghost" id="prevLv">上一层</button>
+          <button class="btn" id="nextLv">下一层</button>
+          <button class="btn ghost" id="copyNarr">复制串联阐述</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 视图：03 系统解剖 ===== -->
+<section class="blk" id="anatomy">
+  <div class="blk-head">
+    <div class="blk-no"><b>03</b><i>ANATOMY</i></div>
+    <div>
+      <h2 class="blk-title">把“混合”拆开：三层通路</h2>
+      <p class="blk-lead">人的神经系统、皮肤上的接口器件、机器侧的算法与执行，是三种材质、三种时间尺度、三种失效模式的部件。系统设计的主要难点不在单层，而在两处接缝。</p>
+    </div>
+  </div>
+  <div class="blk-body">
+    <aside class="side">
+      <p>三层不是并列的三个系统</p>
+      <p>它们是同一系统里串联的信号通路，靠接口层把生物电信号翻译成数字量，再翻译回刺激波形。</p>
+      <p>接缝一：电极与皮肤 / 神经束之间。</p>
+      <p>接缝二：解码结果与控制指令之间。</p>
+    </aside>
+    <div class="main">
+      <div class="layers">
+        <div class="layer bio"><div class="band"></div>
+          <h3>生物神经层</h3><span class="en">BIOLOGICAL NEURAL LAYER</span>
+          <p>信号的来源与归宿。意图在此生成，感觉在此被体验。它的带宽与噪声不受工程侧控制。</p>
+          <ol>
+            <li>中枢：运动皮层、脊髓通路</li>
+            <li>外周：运动神经、感觉神经、神经肌肉接头</li>
+            <li>效应与感受：肌肉收缩、皮肤触压与本体感觉</li>
+          </ol>
+        </div>
+        <div class="layer ifc"><div class="band"></div>
+          <h3>接口层</h3><span class="en">NEURAL INTERFACE</span>
+          <p>两种材质相接的地方。既要把微伏级生物电取出来，又要把刺激安全地送回去，同时不能损伤组织。</p>
+          <ol>
+            <li>采集：干 / 湿电极、植入式电极阵列</li>
+            <li>调理：前置放大、共模抑制、工频陷波</li>
+            <li>回注：功能性电刺激、振动与力反馈装置</li>
+          </ol>
+        </div>
+        <div class="layer mch"><div class="band"></div>
+          <h3>机器算法与执行层</h3><span class="en">DECODING &amp; ACTUATION</span>
+          <p>把波形变成意图，把意图变成动作，再把动作结果变成可以回注的信号。时延预算主要花在这一层。</p>
+          <ol>
+            <li>解码：特征提取、分类或连续回归、在线自适应</li>
+            <li>执行：外骨骼、机械臂、线控底盘、辅助操控</li>
+            <li>监控：安全联锁、置信度估计、降级策略</li>
+          </ol>
+        </div>
+      </div>
+
+      <p class="tblhint">左右滑动可查看完整表格</p>
+      <div class="tblwrap" style="margin-top:24px">
+        <table>
+          <colgroup><col style="width:26%"><col style="width:30%"><col style="width:44%"></colgroup>
+          <thead><tr><th>子系统</th><th>承担的功能</th><th>继续向下拆出的模块</th></tr></thead>
+          <tbody>
+            <tr><td><b>神经信号采集</b><br><span class="mono">acquisition</span></td><td>把生物电变成可计算的数字序列，保证信噪比与同步性。</td><td>电极阵列模块、前置放大与滤波模块、模数转换与无线传输模块</td></tr>
+            <tr><td><b>意图解码</b><br><span class="mono">decoding</span></td><td>从序列中识别动作类别或连续运动量，并给出置信度。</td><td>特征提取模块、分类 / 回归模型模块、在线校准模块</td></tr>
+            <tr><td><b>机器增强与反馈刺激</b><br><span class="mono">augmentation &amp; feedback</span></td><td>把执行结果编码为力、位置、触觉刺激送回神经系统。</td><td>刺激波形发生模块、触觉阵列驱动模块、强度限幅与安全联锁模块</td></tr>
+            <tr><td><b>执行协同控制</b><br><span class="mono">actuation &amp; control</span></td><td>把意图变成执行机构的运动指令，并与人体的自主运动协调。</td><td>指令仲裁模块、伺服驱动模块、柔顺控制模块</td></tr>
+            <tr><td><b>供能、通信与安全监控</b><br><span class="mono">power, link &amp; safety</span></td><td>维持长时间运行的供电、无线链路与失效时的安全降级。</td><td>电源管理模块、时钟同步模块、看门狗与紧急断开模块</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 视图：04 信号闭环 ===== -->
+<section class="blk" id="loop">
+  <div class="blk-head">
+    <div class="blk-no"><b>04</b><i>SIGNAL LOOP</i></div>
+    <div>
+      <h2 class="blk-title">一条完整的回路，才算“混合”成立</h2>
+      <p class="blk-lead">上行链路把意图送出去，下行链路把结果送回来。回路断开时，系统退化为单向的读脑装置；回路闭合后，机器动作才成为人可以“感觉到”的自己身体的一部分。</p>
+    </div>
+  </div>
+  <div class="blk-body">
+    <aside class="side">
+      <p>图上标注的 t₁…t₇ 是时延预算的分配点，不是实测值。</p>
+      <p>闭环总时延取各段之和，安全阈值随任务类型变化：康复动作可容忍较宽，车辆操控要求更紧。</p>
+      <p>回路必须双向都成立，单向读取不构成“混合”。</p>
+    </aside>
+    <div class="main">
+      <div class="grid-2">
+        <div class="factbox">
+          <h4>上行链路：意图变成动作</h4>
+          <p>皮层产生运动意图，电极把它变成微伏级电位；放大与模数转换后，算法在时间窗内判断这是哪一类动作（离散分类），或运动量到多少（连续回归）；控制层再把判定结果仲裁成执行机构能接受的指令。</p>
+        </div>
+        <div class="factbox">
+          <h4>下行链路：结果变回感觉</h4>
+          <p>执行机构的位置、速度与接触力被测量后，按人的感知尺度重新编码：力映射成振动或压迫，位姿映射成体感刺激。刺激必须落在安全限幅内，且与上行意图在时间上对齐，人才会把它当作自己的动作。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="loopwide">
+      <div class="loopwrap">
+        <svg viewBox="0 0 1040 430" role="img" aria-label="人机混合神经系统的闭环信号流：人的神经系统发出意图，经采集、解码、控制驱动执行机构，执行结果再经感觉编码与刺激发生回注神经系统">
+          <defs>
+            <marker id="arw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0 0 L10 5 L0 10 z" fill="#9aa8a1"></marker>
+            <marker id="arwG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0 0 L10 5 L0 10 z" fill="#146b5a"></marker>
+            <marker id="arwB" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0 0 L10 5 L0 10 z" fill="#274c7c"></marker>
+          </defs>
+
+          <!-- 人的神经系统 -->
+          <rect x="24" y="150" width="152" height="130" fill="#d7e8e2" stroke="#146b5a" stroke-width="1.2"/>
+          <text x="100" y="184" text-anchor="middle" font-size="16" font-weight="700" fill="#0f4f42">人的神经系统</text>
+          <text x="100" y="204" text-anchor="middle" font-size="11" fill="#3c6a60" font-family="IBM Plex Mono,monospace">运动意图 / 感觉</text>
+          <text x="100" y="240" text-anchor="middle" font-size="12.5" fill="#3c6a60">意图在此生成</text>
+          <text x="100" y="264" text-anchor="middle" font-size="12.5" fill="#3c6a60">结果在此被感知</text>
+
+          <!-- 上行四节点 -->
+          <rect x="218" y="52" width="168" height="86" fill="#fff" stroke="#8f6412" stroke-width="1"/>
+          <text x="302" y="80" text-anchor="middle" font-size="15" font-weight="600" fill="#101a17">神经信号采集</text>
+          <text x="302" y="98" text-anchor="middle" font-size="11.5" fill="#5b6b64" font-family="IBM Plex Mono,monospace">electrode · amp · ADC</text>
+          <text x="302" y="118" text-anchor="middle" font-size="11.5" fill="#8f6412" font-family="IBM Plex Mono,monospace">t₁ + t₂</text>
+
+          <rect x="416" y="52" width="168" height="86" fill="#fff" stroke="#274c7c" stroke-width="1"/>
+          <text x="500" y="80" text-anchor="middle" font-size="15" font-weight="600" fill="#101a17">意图解码</text>
+          <text x="500" y="98" text-anchor="middle" font-size="11.5" fill="#5b6b64" font-family="IBM Plex Mono,monospace">feature · classifier</text>
+          <text x="500" y="118" text-anchor="middle" font-size="11.5" fill="#274c7c" font-family="IBM Plex Mono,monospace">t₃</text>
+
+          <rect x="614" y="52" width="168" height="86" fill="#fff" stroke="#274c7c" stroke-width="1"/>
+          <text x="698" y="80" text-anchor="middle" font-size="15" font-weight="600" fill="#101a17">协同控制</text>
+          <text x="698" y="98" text-anchor="middle" font-size="11.5" fill="#5b6b64" font-family="IBM Plex Mono,monospace">arbitration · servo</text>
+          <text x="698" y="118" text-anchor="middle" font-size="11.5" fill="#274c7c" font-family="IBM Plex Mono,monospace">t₄</text>
+
+          <!-- 执行机构（竖向跨两行） -->
+          <rect x="860" y="52" width="156" height="306" fill="#d8e1ed" stroke="#274c7c" stroke-width="1.2"/>
+          <text x="938" y="82" text-anchor="middle" font-size="16" font-weight="700" fill="#1d3a60">执行机构</text>
+          <text x="938" y="102" text-anchor="middle" font-size="10.5" fill="#3a567f" font-family="IBM Plex Mono,monospace">exoskeleton · manipulator</text>
+          <text x="938" y="118" text-anchor="middle" font-size="10.5" fill="#3a567f" font-family="IBM Plex Mono,monospace">steer-by-wire</text>
+          <line x1="884" y1="136" x2="992" y2="136" stroke="#a9bcd4"/>
+          <text x="938" y="160" text-anchor="middle" font-size="12.5" fill="#1d3a60">外骨骼 · 机械臂</text>
+          <text x="938" y="183" text-anchor="middle" font-size="12.5" fill="#1d3a60">线控转向 / 驱动</text>
+          <text x="938" y="206" text-anchor="middle" font-size="12.5" fill="#1d3a60">辅助操控装置</text>
+          <line x1="884" y1="226" x2="992" y2="226" stroke="#a9bcd4"/>
+          <text x="938" y="250" text-anchor="middle" font-size="11" fill="#3a567f" font-family="IBM Plex Mono,monospace">t₅ 动作执行</text>
+          <text x="938" y="278" text-anchor="middle" font-size="12.5" fill="#1d3a60">位置 / 速度 / 力</text>
+          <text x="938" y="301" text-anchor="middle" font-size="12.5" fill="#1d3a60">接触状态与环境反馈</text>
+          <text x="938" y="328" text-anchor="middle" font-size="11" fill="#3a567f" font-family="IBM Plex Mono,monospace">t₆ 结果测量</text>
+
+          <!-- 下行三节点 -->
+          <rect x="614" y="292" width="168" height="86" fill="#fff" stroke="#8f6412" stroke-width="1"/>
+          <text x="698" y="320" text-anchor="middle" font-size="15" font-weight="600" fill="#101a17">感觉信息编码</text>
+          <text x="698" y="338" text-anchor="middle" font-size="11.5" fill="#5b6b64" font-family="IBM Plex Mono,monospace">force · touch mapping</text>
+
+          <rect x="416" y="292" width="168" height="86" fill="#fff" stroke="#8f6412" stroke-width="1"/>
+          <text x="500" y="320" text-anchor="middle" font-size="15" font-weight="600" fill="#101a17">刺激波形发生</text>
+          <text x="500" y="338" text-anchor="middle" font-size="11.5" fill="#5b6b64" font-family="IBM Plex Mono,monospace">FES · haptic array</text>
+          <text x="500" y="360" text-anchor="middle" font-size="11.5" fill="#8f6412" font-family="IBM Plex Mono,monospace">t₇</text>
+
+          <rect x="218" y="292" width="168" height="86" fill="#fff" stroke="#8f6412" stroke-width="1"/>
+          <text x="302" y="320" text-anchor="middle" font-size="15" font-weight="600" fill="#101a17">安全限幅</text>
+          <text x="302" y="338" text-anchor="middle" font-size="11.5" fill="#5b6b64" font-family="IBM Plex Mono,monospace">safety interlock</text>
+          <text x="302" y="360" text-anchor="middle" font-size="11.5" fill="#8f6412" font-family="IBM Plex Mono,monospace">限流 · 超时断开</text>
+
+          <!-- 连线 -->
+          <path class="sig" d="M176 190 L212 190 L212 105 L214 105" fill="none" stroke="#146b5a" stroke-width="2" marker-end="url(#arwG)" stroke-dasharray="0 0"/>
+          <path class="sig" d="M386 105 L412 105" fill="none" stroke="#9aa8a1" stroke-width="1.6" marker-end="url(#arw)"/>
+          <path class="sig" d="M584 105 L610 105" fill="none" stroke="#9aa8a1" stroke-width="1.6" marker-end="url(#arw)"/>
+          <path class="sig" d="M782 105 L856 105" fill="none" stroke="#274c7c" stroke-width="1.8" marker-end="url(#arwB)"/>
+          <path class="sig" d="M856 335 L786 335" fill="none" stroke="#274c7c" stroke-width="1.8" marker-end="url(#arwB)"/>
+          <path class="sig" d="M610 335 L588 335" fill="none" stroke="#9aa8a1" stroke-width="1.6" marker-end="url(#arw)"/>
+          <path class="sig" d="M412 335 L390 335" fill="none" stroke="#9aa8a1" stroke-width="1.6" marker-end="url(#arw)"/>
+          <path class="sig" d="M214 335 L212 335 L212 240 L180 240" fill="none" stroke="#146b5a" stroke-width="2" marker-end="url(#arwG)"/>
+
+          <!-- 双向标注 -->
+          <text x="24" y="34" font-size="11.5" fill="#5b6b64" font-family="IBM Plex Mono,monospace">UPSTREAM — 意图送出</text>
+          <text x="24" y="416" font-size="11.5" fill="#5b6b64" font-family="IBM Plex Mono,monospace">DOWNSTREAM — 结果回注</text>
+        </svg>
+        <div class="loop-note">
+          <div><b>闭合条件</b>下行通路的刺激必须与上行通路的意图在时间上对齐，否则人感到的是延迟或错位，而不是自己的动作。</div>
+          <div><b>断开后果</b>只有上行时，用户靠视觉判断动作结果，负荷高、精度低；只有下行时，装置变成无意图输入的刺激器。</div>
+          <div><b>待做的工作</b>时延预算表需按小组实验数据填实，本节暂用 t₁…t₇ 占位，不用未经验证的数值充数。</div>
+        </div>
+      </div>
+  </div>
+  <div class="loop-ctrls">
+    <button class="btn" id="playLoop">播放信号流</button>
+    <button class="btn ghost" id="stopLoop">停止</button>
+  </div>
+</section>
+
+<!-- ===== 视图：05 验证指标 ===== -->
+<section class="blk" id="metrics">
+  <div class="blk-head">
+    <div class="blk-no"><b>05</b><i>VERIFICATION</i></div>
+    <div>
+      <h2 class="blk-title">验收：用哪几把尺子量这套系统</h2>
+      <p class="blk-lead">系统工程要求每一层需求都能被验证。下面这张表只写“怎么测、拿什么判定”，具体数值留给小组实验后回填，页面上不放未经验证的数字。</p>
+    </div>
+  </div>
+  <div class="blk-body">
+    <aside class="side">
+      <p>为什么留空</p>
+      <p>指标值随电极类型、受试者、任务难度变化，脱离实验条件的数字没有意义。</p>
+      <p>先定测量方法，再做实验，是这门课的基本顺序。</p>
+    </aside>
+    <div class="main">
+      <p class="tblhint">左右滑动可查看完整表格</p>
+      <div class="tblwrap">
+        <table>
+          <colgroup><col style="width:22%"><col style="width:34%"><col style="width:28%"><col style="width:16%"></colgroup>
+          <thead><tr><th>指标</th><th>测量方法</th><th>判定依据</th><th>当前状态</th></tr></thead>
+          <tbody>
+            <tr><td><b>意图识别准确率</b><br><span class="mono">accuracy</span></td><td>离线交叉验证，再对在线试次逐次统计，区分动作类别与静息态。</td><td>与类别数对应的随机基线比较，并给出混淆矩阵而非单一总数。</td><td><span class="pill plan">待实验</span></td></tr>
+            <tr><td><b>端到端时延</b><br><span class="mono">T_total</span></td><td>注入已知激励，用统一时基对齐各段时间戳，分段测量 t₁…t₇。</td><td>分段之和与整段实测互相校核，偏差过大说明有一段的时钟未同步。</td><td><span class="pill wait">定义完成</span></td></tr>
+            <tr><td><b>反馈辨识度</b><br><span class="mono">feedback acuity</span></td><td>不同强度与位置的刺激对照，记录受试者能否区分。</td><td>辨识正确率与误报率同时给出，单独看正确率会掩盖猜测行为。</td><td><span class="pill plan">待实验</span></td></tr>
+            <tr><td><b>长时稳定性</b><br><span class="mono">stability</span></td><td>连续佩戴记录电极接触阻抗与解码基线漂移，统计重新校准次数。</td><td>漂移速率可预测、校准间隔可接受，才算具备日常使用条件。</td><td><span class="pill plan">待实验</span></td></tr>
+            <tr><td><b>失效安全</b><br><span class="mono">fail-safe</span></td><td>故障注入：断链、解码置信度骤降、刺激超限，观察降级路径。</td><td>任何单点失效都不产生不可控动作；超时后必须回到被动状态。</td><td><span class="pill wait">方案起草</span></td></tr>
+            <tr><td><b>使用负荷</b><br><span class="mono">workload</span></td><td>任务完成时间与错误率，配合主观负荷量表。</td><td>相对未增强条件的对照改善，且不靠视觉补偿撑起成绩。</td><td><span class="pill plan">待实验</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="grid-2" style="margin-top:22px">
+        <div class="factbox">
+          <h4>可验证性来自需求的可测量化</h4>
+          <p>“让操控更自然”不是需求，“闭环时延低于任务允许上限、误触发率低于设定阈值”才是。任务层写下的每条期望，都要在系统层被翻译成一个可测的量，否则这一层就没有验收出口。</p>
+        </div>
+        <div class="factbox">
+          <h4>不要用平均值掩盖分布</h4>
+          <p>解码准确率最容易出现的偏差是只报总体平均。不同动作类别、不同受试者、不同佩戴时长的表现差异才是设计风险所在，所以表格要求附带混淆矩阵与分段统计。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 视图：06 作业提交 ===== -->
+<section class="blk" id="deliverables">
+  <div class="blk-head">
+    <div class="blk-no"><b>06</b><i>DELIVERABLES</i></div>
+    <div>
+      <h2 class="blk-title">作业在这里归档，也在这里提交</h2>
+      <p class="blk-lead">本页是课题的门面，仓库是课题的档案。每次作业同时做三件事：更新本页对应章节、在仓库提交一次 commit、开一条 Issue 记录结论与遗留问题。</p>
+    </div>
+  </div>
+  <div class="blk-body">
+    <aside class="side">
+      <p>提交约定</p>
+      <p>Issue 标题：<span style="color:var(--ink)">[作业编号] 主题</span></p>
+      <p>正文模板：结论、依据、遗留问题三节。</p>
+      <p>章节与作业编号一一对应，便于老师对照检查。</p>
+    </aside>
+    <div class="main">
+      <p class="tblhint">左右滑动可查看完整表格</p>
+      <div class="tblwrap">
+        <table>
+          <colgroup><col style="width:14%"><col style="width:34%"><col style="width:22%"><col style="width:14%"><col style="width:16%"></colgroup>
+          <thead><tr><th>编号</th><th>作业内容</th><th>对应页面章节</th><th>提交位置</th><th>状态</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">A-01</td><td>六层体系梳理：定位所选系统并补全上下层要素</td><td>02 六层梳理</td><td>Issue + 本页</td><td><span class="pill done">已归档</span></td></tr>
+            <tr><td class="mono">A-02</td><td>系统解剖：子系统划分与层间接口定义</td><td>03 系统解剖</td><td>Issue + 本页</td><td><span class="pill done">已归档</span></td></tr>
+            <tr><td class="mono">A-03</td><td>闭环信号流与时延预算表</td><td>04 信号闭环 / 05 验证指标</td><td>Issue</td><td><span class="pill wait">进行中</span></td></tr>
+            <tr><td class="mono">A-04</td><td>实验方案与指标测量设计</td><td>05 验证指标</td><td>Issue</td><td><span class="pill plan">未开始</span></td></tr>
+            <tr><td class="mono">A-05</td><td>期中汇报材料与组内分工说明</td><td>07 进度</td><td>Issue + 仓库文件</td><td><span class="pill plan">未开始</span></td></tr>
+            <tr><td class="mono">A-06</td><td>期末综述：体系视角下的得失与改进</td><td>全页修订</td><td>Issue + 仓库文件</td><td><span class="pill plan">未开始</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px">
+        <button class="btn" id="btnRepo">打开课题仓库</button>
+        <button class="btn ghost" id="btnIssue">提交新作业（Issue）</button>
+        <button class="btn ghost" id="btnCite">复制引用格式</button>
+      </div>
+
+      <div class="grid-2" style="margin-top:22px">
+        <div class="factbox">
+          <h4>仓库里放什么</h4>
+          <p><span class="mono">index.html</span> 本页本体；<span class="mono">README.md</span> 课题说明与部署方法；<span class="mono">docs/</span> 每次作业的书面稿与图；<span class="mono">assets/</span> 图片与实验截图。页面与文档同仓，改一处即可同步。</p>
+        </div>
+        <div class="factbox">
+          <h4>为什么用 Issue 而不是只发文件</h4>
+          <p>Issue 带时间戳、可评论、可关闭，天然形成过程证据。老师看的是“你怎么推到结论”，而不是最后一页结论本身，这条记录链就是这门课要的过程材料。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 视图：07 进度 ===== -->
+<section class="blk" id="timeline">
+  <div class="blk-head">
+    <div class="blk-no"><b>07</b><i>PROGRESS</i></div>
+    <div>
+      <h2 class="blk-title">课题节奏</h2>
+      <p class="blk-lead">从课堂上的二十分钟小组讨论，到期末的体系视角复盘，每一段都留下可查的记录。</p>
+    </div>
+  </div>
+  <div class="blk-body">
+    <aside class="side">
+      <p>时间节点以课程安排为准</p>
+      <p>节点完成后在仓库打 tag，页面同步更新状态。</p>
+    </aside>
+    <div class="main">
+      <div class="tl">
+        <div class="t">2026.10 下旬</div><div class="axis"><span class="dot"></span></div>
+          <div class="c"><h4>选题与分工</h4><p>确定“机器增强的人机混合神经系统”为小组对象，划分资料、写作、页面与实验四条线。</p></div>
+        <div class="t">2026.11.11</div><div class="axis"><span class="dot now"></span></div>
+          <div class="c"><h4>六层体系梳理（当前）</h4><p>课堂上完成二十分钟小组讨论：定位所选系统在第四层，补全任务、体系 SoS、整机与子系统、模块要素，并串联成完整阐述。</p></div>
+        <div class="t">2026.11 下旬</div><div class="axis"><span class="dot"></span></div>
+          <div class="c"><h4>系统解剖与接口定义</h4><p>把三层通路与五个子系统落到接口清单，明确每个接缝的输入输出与失效模式。</p></div>
+        <div class="t">2026.12 上旬</div><div class="axis"><span class="dot"></span></div>
+          <div class="c"><h4>闭环实验与指标测量</h4><p>按第五节的方法测时延、准确率与辨识度，回填表格，替换所有占位变量。</p></div>
+        <div class="t">2026.12 下旬</div><div class="axis"><span class="dot"></span></div>
+          <div class="c"><h4>期末汇报与体系复盘</h4><p>用任务—体系—整机—系统—子系统—模块的链条重述结论，说明哪些判断被证据推翻。</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="foot">
+    <div>
+      <p><span class="mono">机器增强的人机混合神经系统</span> · 吉林大学车辆工程 · 复杂系统工程课程小组课题</p>
+      <p>页面由小组自行维护，内容随作业推进更新。层级框架取自课堂讨论所用的“任务—体系 SoS—整机—系统—子系统—模块”链条。</p>
+      <p>最近更新：2026-11-11</p>
+    </div>
+    <div>
+      <p class="mono">本地打开：双击 index.html 即可，无需服务器。</p>
+      <p class="mono">在线访问：仓库 Settings → Pages → 选 main 分支根目录。</p>
+    </div>
+  </div>
+</footer>
+
+</div><!-- /shell -->
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* ===== 数据：六层 ===== */
+const LEVELS = [
+  {
+    tag:"LV01 / MISSION", zh:"任务", h:"让人产生于神经系统的意图，能在机器上被执行，并把结果以感觉的形式还回神经系统。",
+    p:"任务层不描述装置，只描述存在理由与成功标准。它要回答：为谁做、在什么场景做、做到什么程度算成功、不允许出现什么后果。",
+    list:["需求方：运动功能受损者的康复训练、驾驶与作业人员的操控增强、需要精细操作的工程场景","任务目标：新增一条可用的意图—动作通路，并降低原有操控的认知与体力负荷","约束：生物相容与安全第一、闭环时延受任务类型限制、失效时必须可逆且不产生危险动作","验收：意图可被可靠识别、动作结果可被感知、长时间使用不引起组织损伤"],
+    q:"这件事为什么值得做，做到什么程度算成功？",
+    rel:"任务层是整条链的起点，它向体系 SoS 提出能力需求；体系 SoS 再把需求分派给各成员系统，最终落到本系统的功能指标上。"
+  },
+  {
+    tag:"LV02 / SYSTEM OF SYSTEMS", zh:"体系 SoS", h:"人、神经接口设备、计算与算法平台、执行机构、任务环境共同组成的运行体系。",
+    p:"体系 SoS 的关键特征不是“大”，而是成员各自独立存在、独立演进：器件会换代、算法会升级、车辆会改款，没有任何一方能要求其他方等自己。",
+    list:["成员一：人的生理系统，自带稳态调节与疲劳特性，不可被重新设计","成员二：神经接口设备，电极、放大、无线链路，随器件工艺演进","成员三：计算与算法平台，解码模型与在线校准能力，随算力与数据演进","成员四：执行机构，外骨骼、机械臂或线控底盘，随车型与产线变化","成员五：任务环境，康复室、驾驶舱、车间，电磁与安全规范各不相同"],
+    q:"这套系统在什么环境里运行，谁和谁必须协同？",
+    rel:"体系层吸收任务需求，产出跨系统接口与运行约束；这些约束向下压到整机，成为重量、功耗、电磁兼容与安全规范的来源。"
+  },
+  {
+    tag:"LV03 / VEHICLES", zh:"整机", h:"被增强的人：一具躯体，加上贴合它的接口硬件、供能与安全装置。",
+    p:"整机是承载载体，回答“靠什么完成任务”。它把体系约束落成物理形态：戴在哪里、怎么供电、多重、发热多少、日常活动受多大影响。",
+    list:["躯体与人体工学：电极帽、袖套、绑带的贴合方式与压迫点","接口硬件：植入式或非植入式器件的安装位置与固定方案","能源与热管理：电池容量、续航、功放发热与散热路径","人机物理接口：外骨骼关节对齐、佩戴时的关节活动范围","安全装置：机械限位、紧急断开、刺激限幅的物理实现"],
+    q:"这些功能装在一个什么样的载体上？",
+    rel:"整机把体系约束变成物理约束，再向系统提出体积、重量、功耗与安全的硬指标；系统不能脱离这些指标做设计。"
+  },
+  {
+    tag:"LV04 / SYSTEMS（本组所选）", zh:"系统", h:"人机混合神经系统：把意图采集、意图解码、机器执行与感觉回注连成一条闭环信息通路。",
+    p:"这是本组选定的层级。它有明确边界（从神经信号到刺激回注），有输入输出，有内部功能分配，因此可以独立作为一个系统来分析与验证。",
+    list:["输入：神经电信号、任务指令、执行机构的状态反馈","输出：控制指令、刺激波形、安全状态与告警","功能：采集、解码、增强、反馈、监控与降级","接口：向上对接整机的供电与佩戴结构，向下划分五个子系统"],
+    q:"载体内部，是哪一套功能在完成任务？",
+    rel:"它承接整机的硬指标，向下拆成五个子系统；同时向上反馈可实现性——解码精度不够时，任务层的期望必须修正，这是双向的。"
+  },
+  {
+    tag:"LV05 / SUB-SYSTEMS", zh:"子系统", h:"五个子系统：采集、解码、增强与反馈、执行协同、供能通信与安全。",
+    p:"子系统划分的依据是功能与接口，而不是器件清单。每个子系统应能独立测试、独立失效，并且失效时不拖垮整条通路。",
+    list:["采集子系统：电极—放大—滤波—模数转换—无线传输，目标是信噪比与时序同步","解码子系统：特征提取、分类或连续回归、在线校准，目标是精度与鲁棒性","增强与反馈子系统：刺激波形生成、触觉与力反馈映射，目标是人能辨识且安全","执行协同子系统：指令仲裁、伺服驱动、柔顺控制，目标是动作自然、不与人对抗","供能通信与安全子系统：电源管理、时钟同步、看门狗、紧急断开，目标是可预测降级"],
+    q:"每个子系统独立拿出来，能不能测、坏了会不会带崩全局？",
+    rel:"子系统把系统的功能指标分到可测试的单元，并向下定义模块之间的电气与数据接口；子系统划分错了，模块再好也集成不起来。"
+  },
+  {
+    tag:"LV06 / MODULES", zh:"模块", h:"可独立设计、替换与复用的最小功能单元，模块之间的接口要写清楚电气、时序与数据格式。",
+    p:"模块层是设计与采购真正发生的地方。模块可以换供应商、换工艺，只要接口契约不变，上层就不必重新验证。",
+    list:["电极阵列模块：干电极或植入式阵列，决定信号源质量","前置放大与滤波模块：共模抑制、工频陷波、增益与带宽选择","模数转换与无线传输模块：采样率、量化位宽、丢包与重传策略","特征提取与模型模块：时窗、频域或空域特征，模型结构与更新机制","刺激波形发生模块：波形、频率、脉宽与强度限幅","时钟同步与安全联锁模块：统一时基、超时断开、故障自检"],
+    q:"每个模块的接口契约写清楚了吗？",
+    rel:"模块层没有下游，它是实现起点；但所有模块的验收标准都必须能追溯到系统层的指标，否则就是自娱自乐的设计。"
+  }
+];
+
+/* ===== 配置：仓库地址 ===== */
+const GH = {
+  user: (document.querySelector('meta[name="repo-user"]')||{}).content || "",
+  repo: (document.querySelector('meta[name="repo-name"]')||{}).content || ""
+};
+const GH_URL = GH.user && GH.repo ? `https://github.com/${GH.user}/${GH.repo}` : "";
+
+/* ===== toast ===== */
+let toastTimer = null;
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 3200);
+}
+
+/* ===== 六层阶梯 ===== */
+let curLv = 0;
+const rungs = [...document.querySelectorAll('.rung')];
+function renderLv(i){
+  curLv = i;
+  const d = LEVELS[i];
+  rungs.forEach((r,k)=>r.setAttribute('aria-selected', k===i ? 'true':'false'));
+  document.getElementById('pTag').textContent = d.tag;
+  document.getElementById('pH').textContent = d.h;
+  document.getElementById('pP').textContent = d.p;
+  document.getElementById('pQ').textContent = d.q;
+  document.getElementById('pRel').textContent = d.rel;
+  const ul = document.getElementById('pList');
+  ul.innerHTML = '';
+  d.list.forEach(item=>{
+    const li = document.createElement('li');
+    const s = document.createElement('span');
+    s.textContent = item;
+    li.appendChild(s);
+    ul.appendChild(li);
+  });
+}
+rungs.forEach((r,i)=>{
+  r.addEventListener('click', ()=>renderLv(i));
+  r.addEventListener('keydown', e=>{
+    if(e.key==='ArrowRight'||e.key==='ArrowLeft'){
+      const n = e.key==='ArrowRight' ? Math.min(5,i+1) : Math.max(0,i-1);
+      rungs[n].focus(); renderLv(n);
+    }
+  });
+});
+document.getElementById('prevLv').addEventListener('click', ()=>renderLv(Math.max(0,curLv-1)));
+document.getElementById('nextLv').addEventListener('click', ()=>renderLv(Math.min(5,curLv+1)));
+renderLv(0);
+
+/* ===== 串联阐述 ===== */
+function narrative(){
+  const lines = [
+    '课题：机器增强的人机混合神经系统（复杂系统工程课程小组课题）',
+    '',
+    '所选“系统”所处层级：第四层——系统 Systems。',
+    ''
+  ];
+  const order = ['任务 Mission','体系 SoS','整机 Vehicles','系统 Systems','子系统 Sub-systems','模块 Modules'];
+  LEVELS.forEach((d,i)=>{
+    lines.push(`${order[i]}：${d.h}`);
+    lines.push(`  要素：${d.list.join('；')}`);
+    lines.push('');
+  });
+  lines.push('串联说明：任务层定义为什么做与做到什么程度算成功；体系 SoS 把需求分派给人的生理系统、接口设备、算法平台、执行机构与任务环境；整机把这些约束落成一具被增强的人的具体形态；系统在整机内部承担意图—动作—感觉的闭环转换；系统再向下拆为采集、解码、增强与反馈、执行协同、供能通信与安全五个子系统；子系统由电极阵列、放大滤波、模数转换与传输、特征提取与模型、刺激波形发生、安全联锁等模块实现。自上而下是需求分解，自下而上是实现支撑。');
+  return lines.join('\n');
+}
+function copyText(text, okMsg){
+  const done = ()=>toast(okMsg);
+  if(navigator.clipboard && window.isSecureContext){
+    navigator.clipboard.writeText(text).then(done).catch(()=>fallback());
+  } else { fallback(); }
+  function fallback(){
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed'; ta.style.top = '-1000px'; ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    let ok = false;
+    try { ok = document.execCommand('copy'); } catch(e) { ok = false; }
+    document.body.removeChild(ta);
+    toast(ok ? okMsg : '当前环境不允许自动复制，请手动全选本页文字');
+  }
+}
+document.getElementById('copyNarr').addEventListener('click', ()=>copyText(narrative(), '串联阐述已复制，可直接粘进小组文档'));
+document.getElementById('btnCite').addEventListener('click', ()=>{
+  const url = GH_URL ? GH_URL : '（部署后填写仓库地址）';
+  copyText(`小组课题：机器增强的人机混合神经系统。复杂系统工程课程，吉林大学车辆工程，2026。${url}`, '引用格式已复制');
+});
+
+/* ===== 仓库按钮 ===== */
+function requireRepo(){
+  if(GH_URL){ return true; }
+  toast('仓库地址尚未配置：打开 index.html，把顶部 meta 里的 repo-user 与 repo-name 填成你的 GitHub 用户名和仓库名');
+  return false;
+}
+document.getElementById('btnRepo').disabled = false;
+document.getElementById('btnRepo').addEventListener('click', ()=>{
+  if(!requireRepo()) return;
+  window.open(GH_URL, '_blank', 'noopener');
+});
+document.getElementById('btnIssue').addEventListener('click', ()=>{
+  if(!requireRepo()) return;
+  const title = encodeURIComponent('[作业编号] 主题');
+  const body = encodeURIComponent('## 结论\n\n\n## 依据\n\n- 引用页面章节：\n- 参考材料：\n\n## 遗留问题\n\n- ');
+  window.open(`${GH_URL}/issues/new?title=${title}&body=${body}`, '_blank', 'noopener');
+});
+
+/* ===== 信号流播放 ===== */
+const loopSvg = document.querySelector('.loopwrap svg');
+const paths = [...loopSvg.querySelectorAll('.sig')];
+document.getElementById('playLoop').addEventListener('click', ()=>{
+  loopSvg.classList.add('playing');
+  toast('正在演示信号流向：上行意图 → 执行 → 下行反馈');
+});
+document.getElementById('stopLoop').addEventListener('click', ()=>{
+  loopSvg.classList.remove('playing');
+});
+
+/* ===== 导航 ===== */
+const nav = document.getElementById('nav');
+const navToggle = document.getElementById('navToggle');
+navToggle.addEventListener('click', ()=>{
+  const open = nav.classList.toggle('open');
+  navToggle.setAttribute('aria-expanded', open ? 'true':'false');
+});
+nav.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>{
+  nav.classList.remove('open');
+  navToggle.setAttribute('aria-expanded','false');
+}));
+
+const links = [...nav.querySelectorAll('a')];
+const secs = links.map(a=>document.querySelector(a.getAttribute('href'))).filter(Boolean);
+const io = new IntersectionObserver(entries=>{
+  entries.forEach(en=>{
+    if(en.isIntersecting){
+      links.forEach(l=>l.classList.remove('on'));
+      const l = links.find(l=>l.getAttribute('href') === '#'+en.target.id);
+      if(l) l.classList.add('on');
+    }
+  });
+},{rootMargin:'-45% 0px -50% 0px'});
+secs.forEach(s=>io.observe(s));
+</script>
+</body>
+</html>
