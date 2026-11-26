@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>课题汇报 · 机器增强的人机混合神经系统 · 复杂系统工程</title>
+<meta name="description" content="复杂系统工程课程四次作业汇总学术汇报演示稿：体系定位与解剖、业务与相关方需求、系统需求与架构安全、场景分层与风险分析。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23141a17'/%3E%3Cpath d='M6 16h4l3-7 4 14 3-7h4' stroke='%23146b5a' stroke-width='2.4' fill='none' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Serif+SC:wght@500;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --ink:#141a17; --paper:#f1f3ef; --paper-2:#e7ebe6; --line:#c6cfc8; --line-strong:#9aa8a1;
+  --muted:#5b6b64; --bio:#146b5a; --bio-soft:#d7e8e2; --brass:#8f6412; --brass-soft:#efe4cb;
+  --machine:#274c7c; --machine-soft:#d8e1ed; --alert:#a93a2c; --alert-soft:#f3ddd9; --plum:#5b4a7d; --plum-soft:#e7e1ef;
+  --serif:"Noto Serif SC","Songti SC",serif; --sans:"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:#dfe4df;color:var(--ink);font-family:var(--sans);font-weight:400;
+  -webkit-font-smoothing:antialiased;overflow:hidden;
+}
+::selection{background:var(--bio);color:#fff}
+:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+
+/* ===== stage & deck ===== */
+.stage{position:fixed;inset:0;display:grid;place-items:center}
+.deck{
+  position:relative;width:min(100vw,177.78vh);aspect-ratio:16/9;background:var(--paper);
+  background-image:linear-gradient(to right,rgba(16,26,23,.04) 1px,transparent 1px),linear-gradient(to bottom,rgba(16,26,23,.04) 1px,transparent 1px);
+  background-size:56px 56px;box-shadow:0 30px 80px rgba(20,26,23,.28);overflow:hidden;
+}
+.slide{position:absolute;inset:0;display:none;flex-direction:column;padding:clamp(28px,4.4vh,46px) clamp(34px,4.6vw,64px) clamp(58px,7vh,72px)}
+.slide.active{display:flex}
+
+/* ===== reveal ===== */
+.rv{opacity:0;transform:translateY(14px)}
+.slide.active .rv{animation:rvIn .55s cubic-bezier(.22,.7,.3,1) both;animation-delay:var(--d,0s)}
+@keyframes rvIn{to{opacity:1;transform:translateY(0)}}
+
+/* ===== shared type ===== */
+.kicker{display:inline-flex;align-items:center;gap:10px;font-family:var(--mono);font-size:clamp(10px,1.1vw,12px);letter-spacing:.08em;color:var(--bio)}
+.kicker .bar{display:block;width:26px;height:1px;background:var(--bio)}
+h2.st-title{font-family:var(--serif);font-weight:700;font-size:clamp(22px,2.7vw,32px);line-height:1.25;margin:12px 0 10px}
+.st-lead{color:var(--muted);font-size:clamp(12.5px,1.25vw,15px);line-height:1.8;max-width:68ch}
+.mono{font-family:var(--mono)}
+.tba{font-family:var(--mono);font-size:.85em;color:var(--brass)}
+
+/* ===== top / bottom chrome ===== */
+.chrome-top{position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:14px clamp(20px,2.4vw,32px);font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.04em;pointer-events:none}
+.chrome-top .right{display:flex;gap:14px}
+.progress{position:absolute;top:0;left:0;height:2px;background:var(--bio);width:0;transition:width .35s ease}
+.chrome-bottom{position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:space-between;align-items:center;padding:12px clamp(20px,2.4vw,32px);font-family:var(--mono);font-size:11px;color:var(--muted)}
+.controls{display:flex;align-items:center;gap:10px}
+.dot{width:7px;height:7px;border:1px solid var(--line-strong);background:transparent;border-radius:50%;cursor:pointer;padding:0}
+.dot.on{background:var(--ink);border-color:var(--ink)}
+.navbtn{appearance:none;border:1px solid var(--line-strong);background:#fff;color:var(--ink);font-family:var(--mono);font-size:11px;padding:6px 11px;cursor:pointer;border-radius:1px}
+.navbtn:hover{background:var(--paper-2)}
+.counter{font-family:var(--mono);font-size:11px;letter-spacing:.06em}
+.counter b{color:var(--ink)}
+
+/* ===== generic grids & cards ===== */
+.body{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:clamp(14px,2.2vh,22px)}
+.cols-2{display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,1.8vw,22px)}
+.cols-3{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(12px,1.5vw,18px)}
+.cols-4{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(10px,1.3vw,16px)}
+.card{border:1px solid var(--line);background:#fff;padding:clamp(14px,1.8vw,20px)}
+.card h4{font-family:var(--serif);font-size:clamp(14px,1.4vw,17px);font-weight:700;margin:0 0 6px}
+.card .en{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.05em;margin-bottom:8px}
+.card p{font-size:clamp(11.5px,1.15vw,13.5px);line-height:1.75;color:#33413c}
+.card ul{margin:8px 0 0;padding-left:16px}
+.card li{font-size:clamp(11.5px,1.1vw,13px);line-height:1.7;color:#33413c;margin-bottom:3px}
+.chip{display:inline-flex;align-items:center;font-family:var(--mono);font-size:10.5px;border:1px solid var(--line);background:#fff;padding:4px 9px;color:#33413c}
+.tag{display:inline-block;font-family:var(--mono);font-size:10.5px;padding:2px 8px;border-radius:1px}
+.tag.bio{background:var(--bio-soft);color:var(--bio)}
+.tag.machine{background:var(--machine-soft);color:var(--machine)}
+.tag.brass{background:var(--brass-soft);color:var(--brass)}
+.tag.plum{background:var(--plum-soft);color:var(--plum)}
+.tag.alert{background:var(--alert-soft);color:var(--alert)}
+
+/* ===== compact table ===== */
+.tblwrap{border:1px solid var(--line-strong);background:#fff;overflow:hidden}
+table{width:100%;border-collapse:collapse;table-layout:fixed}
+th,td{text-align:left;vertical-align:top;padding:8px 10px;border-bottom:1px solid var(--line);font-size:clamp(10.5px,1.05vw,12.5px);line-height:1.55}
+th{font-family:var(--mono);font-size:10px;letter-spacing:.05em;color:var(--muted);font-weight:500;background:var(--paper)}
+tbody tr:last-child td{border-bottom:0}
+td code,.mono{font-family:var(--mono);font-size:11px}
+
+/* ===== cover ===== */
+.cover{justify-content:center;gap:22px}
+.cover .kicker{font-size:clamp(11px,1.2vw,13px)}
+.cover h1{font-family:var(--serif);font-weight:900;font-size:clamp(32px,4.6vw,54px);line-height:1.14;letter-spacing:-.01em}
+.cover h1 em{font-style:normal;display:block;font-family:var(--mono);font-weight:400;font-size:clamp(13px,1.6vw,18px);letter-spacing:.04em;color:var(--muted);margin-top:16px}
+.cover-sub{max-width:60ch;color:var(--muted);font-size:clamp(13px,1.3vw,15.5px);line-height:1.9}
+.cover-meta{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line-strong);margin-top:18px}
+.cover-meta div{padding:14px 16px 0 0;border-right:1px solid var(--line)}
+.cover-meta div:last-child{border-right:0}
+.cover-meta dt{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.06em;margin-bottom:5px}
+.cover-meta dd{font-size:clamp(12px,1.15vw,13.5px);font-weight:500}
+
+/* ===== divider ===== */
+.divider{justify-content:center;gap:18px}
+.divider .ghost{position:absolute;right:clamp(20px,4vw,60px);top:50%;transform:translateY(-50%);font-family:var(--serif);font-weight:900;font-size:clamp(120px,20vw,220px);color:rgba(20,26,23,.06);line-height:1;pointer-events:none}
+.divider .kicker{font-size:clamp(11px,1.2vw,13px)}
+.divider h2{font-family:var(--serif);font-weight:900;font-size:clamp(28px,3.8vw,44px);line-height:1.18}
+.divider p{max-width:56ch;color:var(--muted);font-size:clamp(13px,1.3vw,15.5px);line-height:1.85}
+.divider .out{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+
+/* ===== chain (toc / pipeline) ===== */
+.chain{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--line-strong);background:#fff}
+.chain .node{padding:clamp(16px,2vw,24px) clamp(14px,1.6vw,20px);border-right:1px solid var(--line);position:relative}
+.chain .node:last-child{border-right:0}
+.chain .node .no{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.06em;margin-bottom:10px}
+.chain .node h4{font-family:var(--serif);font-size:clamp(14px,1.4vw,17px);font-weight:700;margin:0 0 6px}
+.chain .node p{font-size:clamp(11px,1.05vw,12.5px);line-height:1.7;color:#33413c}
+.chain .node .out{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px}
+.chain .node::after{content:"→";position:absolute;right:-11px;top:50%;transform:translateY(-50%);font-family:var(--mono);color:var(--line-strong);z-index:2;background:var(--paper)}
+.chain .node:last-child::after{content:""}
+
+/* ===== ladder ===== */
+.ladder{display:grid;grid-template-columns:repeat(6,1fr);border:1px solid var(--line-strong);background:#fff}
+.ladder .rung{padding:14px 12px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:5px}
+.ladder .rung:last-child{border-right:0}
+.ladder .rung .lv{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.08em}
+.ladder .rung .zh{font-weight:700;font-size:clamp(12.5px,1.2vw,14.5px)}
+.ladder .rung .en{font-family:var(--mono);font-size:9.5px;color:var(--muted)}
+.ladder .rung.on{background:var(--bio-soft)}
+.ladder .rung.on .zh{color:var(--bio)}
+
+/* ===== svg figures ===== */
+.fig{border:1px solid var(--line);background:#fff;padding:clamp(12px,1.6vw,18px)}
+.fig svg{display:block;width:100%;height:auto}
+.fig-cap{font-family:var(--mono);font-size:10.5px;color:var(--muted);margin-top:8px;letter-spacing:.03em}
+
+/* ===== tier pills ===== */
+.tier{display:inline-block;font-family:var(--mono);font-size:10.5px;padding:2px 8px;border-radius:1px}
+.tier.normal{background:var(--bio-soft);color:var(--bio)}
+.tier.critical{background:var(--brass-soft);color:var(--brass)}
+.tier.accident{background:var(--alert-soft);color:var(--alert)}
+
+/* ===== responsive / reduced motion ===== */
+@media (max-width:960px){
+  .cols-3,.cols-4,.chain{grid-template-columns:repeat(2,1fr)}
+  .chain .node:nth-child(2n){border-right:0}
+  .chain .node::after{display:none}
+  .ladder{grid-template-columns:repeat(3,1fr)}
+  .cover-meta{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:640px){
+  .deck{width:100%;aspect-ratio:auto;min-height:100vh}
+  .slide{position:relative;min-height:100vh;padding:24px 18px 64px}
+  .cover h1{font-size:26px}
+  .cover-meta{grid-template-columns:1fr 1fr}
+  .chain{grid-template-columns:1fr}
+  .chain .node{border-right:0;border-bottom:1px solid var(--line)}
+}
+@media (prefers-reduced-motion:reduce){
+  .rv{opacity:1!important;transform:none!important}
+  *{transition:none!important;animation:none!important}
+}
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="deck" id="deck">
+    <div class="progress" id="progress"></div>
+    <div class="chrome-top">
+      <span>机器增强的人机混合神经系统 · 复杂系统工程 2026</span>
+      <span class="right"><span id="topChapter">COVER</span><span>吉林大学 · 车辆工程</span></span>
+    </div>
+
+    <!-- ===== 1 封面 ===== -->
+    <section class="slide cover" data-chapter="COVER">
+      <p class="kicker rv" style="--d:.05s"><span class="bar"></span>吉林大学 · 车辆工程 · 复杂系统工程课程 · 小组课题汇报</p>
+      <h1 class="rv" style="--d:.15s">机器增强的人机混合神经系统<em>Machine-augmented Human–Machine Hybrid Nervous System</em></h1>
+      <p class="cover-sub rv" style="--d:.25s">四次作业汇总：体系定位与系统解剖 → 业务与相关方需求 → 系统需求 · 初始架构 · 安全架构 → 场景分层 · 设计运行条件 · 风险场景。需求自上而下分解，实现与验证自下而上支撑，安全贯穿全程。</p>
+      <dl class="cover-meta">
+        <div class="rv" style="--d:.35s"><dt>课题层级</dt><dd>第四层 · 系统 Systems</dd></div>
+        <div class="rv" style="--d:.42s"><dt>覆盖作业</dt><dd>作业一 ～ 作业四</dd></div>
+        <div class="rv" style="--d:.49s"><dt>汇报形式</dt><dd>HTML 演示稿 · 16:9</dd></div>
+        <div class="rv" style="--d:.56s"><dt>分组</dt><dd>第 3 组</dd></div>
+      </dl>
+    </section>
+
+    <!-- ===== 2 汇报目录 / 逻辑链 ===== -->
+    <section class="slide" data-chapter="AGENDA">
+      <div class="chrome-top" style="position:static;padding:0 0 8px"><span>汇报目录</span><span class="right">FOUR STAGES</span></div>
+      <div class="body">
+        <h2 class="st-title rv">四次作业构成一条系统工程推进链</h2>
+        <p class="st-lead rv" style="--d:.08s">从“系统是什么”出发，依次定义相关方要什么、系统必须做成什么、在什么条件下以何种风险运行；每一阶段的输出都是下一阶段的输入。</p>
+        <div class="chain">
+          <div class="node rv" style="--d:.15s">
+            <div class="no">HW-1</div>
+            <h4>体系定位与解剖</h4>
+            <p>定位所选系统所处层级，补全上下层要素；拆解三层通路与五个子系统，闭合双向信号回路。</p>
+            <div class="out"><span class="chip">六层体系</span><span class="chip">五子系统</span><span class="chip">闭环信号流</span></div>
+          </div>
+          <div class="node rv" style="--d:.25s">
+            <div class="no">HW-2</div>
+            <h4>业务与相关方需求</h4>
+            <p>按 BRS / StRS 框架做业务任务分析与相关方需求分析，形成可追溯的相关方需求条目。</p>
+            <div class="out"><span class="chip">BRS</span><span class="chip">StRS</span><span class="chip">R-01 ～ R-12</span></div>
+          </div>
+          <div class="node rv" style="--d:.35s">
+            <div class="no">HW-3</div>
+            <h4>系统需求 · 架构 · 安全</h4>
+            <p>相关方需求转换为 SyRS 技术需求，给出初始架构与控制框图；基于 STPA 导出安全需求与安全架构。</p>
+            <div class="out"><span class="chip">SyRS</span><span class="chip">SR-01 ～ SR-10</span><span class="chip">STPA</span></div>
+          </div>
+          <div class="node rv" style="--d:.45s">
+            <div class="no">HW-4</div>
+            <h4>场景 · ODC · 风险</h4>
+            <p>环境场景分层与要素梳理，设定设计运行条件；选取典型场景详述，分析安全风险并形成风险场景列表。</p>
+            <div class="out"><span class="chip">ODC</span><span class="chip">S-01</span><span class="chip">RS-01 ～ RS-12</span></div>
+          </div>
+        </div>
+        <p class="st-lead rv" style="--d:.55s">贯穿主线：意图可理解 → 结果可感觉 → 出错可停 → 协同不对抗 → 过程可追溯。</p>
+      </div>
+    </section>
+
+    <!-- ===== 3 课题概述 ===== -->
+    <section class="slide" data-chapter="OVERVIEW">
+      <div class="chrome-top" style="position:static;padding:0 0 8px"><span>课题概述</span><span class="right">SYSTEM SCOPE</span></div>
+      <div class="body">
+        <h2 class="st-title rv">被增强的人整机内部，承担意图—动作—感觉转换的系统层</h2>
+        <div class="cols-2">
+          <div class="card rv" style="--d:.1s">
+            <h4>系统定义</h4>
+            <p>读取使用者神经意图，解码并仲裁后驱动外部执行机构；再把机构位置、速度与接触状态编码为可辨识的感觉反馈回注使用者，形成双向闭环。回路断开时退化为单向读脑装置，回路闭合后机器动作才成为人可“感觉到”的自身动作的一部分。</p>
+          </div>
+          <div class="card rv" style="--d:.18s">
+            <h4>系统边界</h4>
+            <p>边界跨过生物与器件的接缝：上含人体内神经通路，下含皮肤外电极、无线链路与解码程序。输入为神经电信号、任务指令与执行机构状态反馈；输出为控制指令、刺激波形、安全状态与告警。</p>
+          </div>
+        </div>
+        <div class="card rv" style="--d:.26s">
+          <div class="en">FIVE SUBSYSTEMS · 五子系统</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px">
+            <span class="chip">① 神经信号采集</span><span class="chip">② 意图解码</span><span class="chip">③ 机器增强与反馈刺激</span><span class="chip">④ 执行协同控制</span><span class="chip">⑤ 供能通信与安全监控</span>
+          </div>
+          <p style="margin-top:10px">设计难点不在单层，而在两处接缝：电极与皮肤 / 神经束之间，以及解码结果与控制指令之间。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 4 作业一分隔 ===== -->
+    <section class="slide divider" data-chapter="HW-1">
+      <div class="ghost">01</div>
+      <p class="kicker rv" style="--d:.05s"><span class="bar"></span>ASSIGNMENT 1 · 体系梳理与系统解剖</p>
+      <h2 class="rv" style="--d:.15s">六层体系定位<br>与三层通路解剖</h2>
+      <p class="rv" style="--d:.25s">按“任务—体系 SoS—整机—系统—子系统—模块”链条定位所选系统，拆出生物神经、接口、机器算法与执行三层通路，并沿闭环梳理上行意图链路与下行反馈链路。</p>
+      <div class="out rv" style="--d:.35s"><span class="tag bio">六层阶梯</span><span class="tag brass">接口接缝</span><span class="tag machine">闭环信号流</span></div>
+    </section>
+
+    <!-- ===== 5 作业一：六层定位 ===== -->
+    <section class="slide" data-chapter="HW-1">
+      <div class="chrome-top" style="position:static;padding:0 0 8px"><span>作业一 · 六层体系</span><span class="right">LEVELS</span></div>
+      <div class="body">
+        <h2 class="st-title rv">所选对象位于第四层：系统 Systems</h2>
+        <p class="st-lead rv" style="--d:.08s">上层给需求与约束，下层给实现与接口；自上而下是需求分解，自下而上是实现支撑。</p>
+        <div class="ladder">
+          <div class="rung rv" style="--d:.12s"><span class="lv">LV01</span><span class="zh">任务</span><span class="en">Mission</span></div>
+          <div class="rung rv" style="--d:.18s"><span class="lv">LV02</span><span class="zh">体系 SoS</span><span class="en">System of Systems</span></div>
+          <div class="rung rv" style="--d:.24s"><span class="lv">LV03</span><span class="zh">整机</span><span class="en">Vehicles</span></div>
+          <div class="rung on rv" style="--d:.30s"><span class="lv">LV04 · 本组</span><span class="zh">系统</span><span class="en">Systems</span></div>
+          <div class="rung rv" style="--d:.36s"><span class="lv">LV05</span><span class="zh">子系统</span><span class="en">Sub-systems</span></div>
+          <div class="rung rv" style="--d:.42s"><span class="lv">LV06</span><span class="zh">模块</span><span class="en">Modules</span></div>
+        </div>
+        <div class="cols-3">
+          <div class="card rv" style="--d:.3s"><h4>为什么是“系统”</h4><p>有明确边界与输入输出，具备需求—功能—架构—接口—验证完整链条，可独立分析与验证。</p></div>
+          <div class="card rv" style="--d:.38s"><h4>为什么不是“整机”</h4><p>整机回答靠什么载体完成任务；本系统回答载体内部哪一套功能在完成任务，层级不能混。</p></div>
+          <div class="card rv" style="--d:.46s"><h4>“混合”是双向</h4><p>只读出脑信号是单向读取；机器把结果编码成刺激返回神经系统，两条方向相反的通路才构成混合。</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 6 作业一：三层通路解剖 ===== -->
+    <section class="slide" data-chapter="HW-1">
+      <div class="chrome-top" style="position:static;padding:0 0 8px"><span>作业一 · 系统解剖</span><span class="right">ANATOMY</span></div>
+      <div class="body">
+        <h2 class="st-title rv">把“混合”拆开：三种材质、两条通路、两处接缝</h2>
+        <div class="cols-3">
+          <div class="card rv" style="--d:.1s">
+            <h4>生物神经层</h4><div class="en">BIOLOGICAL NEURAL LAYER</div>
+            <p>信号来源与归宿：意图在此生成，感觉在此被体验；带宽与噪声不受工程侧控制。</p>
+            <ul><li>中枢：运动皮层、脊髓通路</li><li>外周：运动 / 感觉神经、神经肌肉接头</li><li>效应与感受：肌肉收缩、触压与本体感觉</li></ul>
+          </div>
+          <div class="card rv" style="--d:.18s">
+            <h4>接口层</h4><div class="en">NEURAL INTERFACE</div>
+            <p>两种材质相接处：取出微伏级生物电，把刺激安全送回，同时不损伤组织。</p>
+            <ul><li>采集：干 / 湿电极、植入式阵列</li><li>调理：前置放大、共模抑制、陷波</li><li>回注：功能电刺激、振动与力反馈</li></ul>
+          </div>
+          <div class="card rv" style="--d:.26s">
+            <h4>机器算法与执行层</h4><div class="en">DECODING &amp; ACTUATION</div>
+            <p>波形变意图、意图变动作为、动作结果变回可回注信号；时延预算主要花在这一层。</p>
+            <ul><li>解码：特征提取、分类 / 回归、在线自适应</li><li>执行：外骨骼、机械臂、线控辅助</li><li>监控：安全联锁、置信度、降级策略</li></ul>
+          </div>
+        </div>
+        <div class="card rv" style="--d:.34s">
+          <div class="en">FIVE SUBSYSTEMS · 五子系统与模块划分</div>
+          <p style="margin-top:6px">采集（电极阵列 · 放大滤波 · 模数转换与传输）→ 解码（特征提取 · 模型 · 在线校准）→ 增强与反馈（波形发生 · 触觉驱动 · 限幅联锁）→ 执行协同（指令仲裁 · 伺服 · 柔顺控制）→ 供能通信与安全（电源管理 · 时钟同步 · 看门狗与急停断开）。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 7 作业一：闭环信号流 ===== -->
+    <section class="slide" data-chapter="HW-1">
+      <div class="chrome-top" style="position:static;padding:0 0 8px"><span>作业一 · 信号闭环</span><span class="right">SIGNAL LOOP</span></div>
+      <div class="body">
+        <h2 class="st-title rv">一条完整回路：上行送出意图，下行回注感觉</h2>
+        <div class="fig rv" style="--d:.12s">
+          <svg viewBox="0 0 1040 300" role="img" aria-label="闭环信号流：上行意图链路与下行反馈链路回到人的神经系统">
+            <defs>
+              <marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9aa8a1"/></marker>
+              <marker id="a1g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#146b5a"/></marker>
+            </defs>
+            <rect x="20" y="108" width="150" height="84" fill="#d7e8e2" stroke="#146b5a" stroke-width="1.2"/>
+            <text x="95" y="142" text-anchor="middle" font-size="15" font-weight="700" fill="#0f4f42">人的神经系统</text>
+            <text x="95" y="164" text-anchor="middle" font-size="11" fill="#3c6a60" font-family="IBM Plex Mono,monospace">intention / sensation</text>
+
+            <rect x="220" y="48" width="150" height="70" fill="#fff" stroke="#8f6412"/>
+            <text x="295" y="78" text-anchor="middle" font-size="13.5" font-weight="600" fill="#101a17">信号采集</text>
+            <text x="295" y="98" text-anchor="middle" font-size="10.5" fill="#5b6b64" font-family="IBM Plex Mono,monospace">electrode · amp · ADC</text>
+
+            <rect x="420" y="48" width="150" height="70" fill="#fff" stroke="#274c7c"/>
+            <text x="495" y="78" text-anchor="middle" font-size="13.5" font-weight="600" fill="#101a17">意图解码</text>
+            <text x="495" y="98" text-anchor="middle" font-size="10.5" fill="#5b6b64" font-family="IBM Plex Mono,monospace">feature · classifier</text>
+
+            <rect x="620" y="48" width="150" height="70" fill="#d8e1ed" stroke="#274c7c" stroke-width="1.2"/>
+            <text x="695" y="78" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1d3a60">协同控制</text>
+            <text x="695" y="98" text-anchor="middle" font-size="10.5" fill="#3a567f" font-family="IBM Plex Mono,monospace">arbitration · servo</text>
+
+            <rect x="840" y="48" width="170" height="180" fill="#d8e1ed" stroke="#274c7c" stroke-width="1.2"/>
+            <text x="925" y="80" text-anchor="middle" font-size="15" font-weight="700" fill="#1d3a60">执行机构</text>
+            <text x="925" y="102" text-anchor="middle" font-size="10.5" fill="#3a567f" font-family="IBM Plex Mono,monospace">exoskeleton · manipulator</text>
+            <text x="925" y="132" text-anchor="middle" font-size="12" fill="#1d3a60">位置 / 速度 / 力</text>
+            <text x="925" y="156" text-anchor="middle" font-size="12" fill="#1d3a60">接触状态测量</text>
+
+            <rect x="620" y="188" width="150" height="62" fill="#fff" stroke="#8f6412"/>
+            <text x="695" y="214" text-anchor="middle" font-size="13" font-weight="600" fill="#101a17">感觉编码</text>
+            <text x="695" y="233" text-anchor="middle" font-size="10.5" fill="#5b6b64" font-family="IBM Plex Mono,monospace">force · touch mapping</text>
+
+            <rect x="420" y="188" width="150" height="62" fill="#fff" stroke="#8f6412"/>
+            <text x="495" y="214" text-anchor="middle" font-size="13" font-weight="600" fill="#101a17">刺激发生</text>
+            <text x="495" y="233" text-anchor="middle" font-size="10.5" fill="#5b6b64" font-family="IBM Plex Mono,monospace">FES · haptic array</text>
+
+            <rect x="220" y="188" width="150" height="62" fill="#fff" stroke="#8f6412"/>
+            <text x="295" y="214" text-anchor="middle" font-size="13" font-weight="600" fill="#101a17">安全限幅</text>
+            <text x="295" y="233" text-anchor="middle" font-size="10.5" fill="#5b6b64" font-family="IBM Plex Mono,monospace">interlock · cutoff</text>
+
+            <path class="sig" d="M170 140 L216 140 L216 83 L218 83" fill="none" stroke="#146b5a" stroke-width="2" marker-end="url(#a1g)"/>
+            <path class="sig" d="M370 83 L416 83" fill="none" stroke="#9aa8a1" stroke-width="1.6" marker-end="url(#a1)"/>
+            <path class="sig" d="M570 83 L616 83" fill="none" stroke="#9aa8a1" stroke-width="1.6" marker-end="url(#a1)"/>
+            <path class="sig" d="M770 83 L836 83" fill="none" stroke="#274c7c" stroke-width="1.8" marker-end="url(#a1)"/>
+            <path class="sig" d="M836 219 L774 219" fill="none" stroke="#274c7c" stroke-width="1.8" marker-end="url(#a1)"/>
+            <path class="sig" d="M616 219 L574 219" fill="none" stroke="#9aa8a1" stroke-width="1.6" marker-end="url(#a1)"/>
+            <path class="sig" d="M416 219 L374 219" fill="none" stroke="#9aa8a1" stroke-width="1.6" marker-end="url(#a1)"/>
+            <path class="sig" d="M218 219 L216 219 L216 168 L174 168" fill="none" stroke="#146b5a" stroke-width="2" marker-end="url(#a1g)"/>
+            <text x="20" y="30" font-size="11" fill="#5b6b64" font-family="IBM Plex Mono,monospace">UPSTREAM — 意图送出</text>
+            <text x="20" y="286" font-size="11" fill="#5b6b64" font-family="IBM Plex Mono,monospace">DOWNSTREAM — 结果回注</text>
+          </svg>
+          <p class="fig-cap">图 1-1　双向闭环：下行刺激须与上行意图在时间上对齐；单向上行只是读脑装置。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 8 作业二分隔 ===== -->
+    <section class="slide divider" data-chapter="HW-2">
+      <div class="ghost">02</div>
+      <p class="kicker rv" style="--d:.05s"><span class="bar"></span>ASSIGNMENT 2 · 业务任务分析与相关方需求</p>
+      <h2 class="rv" style="--d:.15s">BRS / StRS 框架下<br>定义相关方要什么</h2>
+      <p class="rv" style="--d:.25s">先做业务需求与运行概念分析，再识别相关方并把各方需要翻译成可追溯、可验证的需求条目，作为系统需求（SyRS）阶段的输入。</p>
+      <div class="out rv" style="--d:.35s"><span class="tag brass">BRS 业务需求</span><span class="tag machine">StRS 相关方需求</span><span class="tag bio">R-01 ～ R-12</span></div>
+    </section>
+
+    <!-- ===== 9 作业二：分析框架与相关方 ===== -->
+    <section class="slide" data-chapter="HW-2">
+      <div class="chrome-top" style="position:static;padding:0 0 8px"><span>作业二 · 需求分析框架</span><span class="right">BRS · StRS · OPSCON</span></div>
+      <div class="body">
+        <h2 class="st-title rv">从业务任务到相关方需要，再到需求条目</h2>
+        <div class="cols-3">
+          <div class="card rv" style="--d:.1s">
+            <h4>BRS 业务需求</h4><div class="en">BUSINESS REQUIREMENT</div>
+            <p>描述组织 / 任务侧为什么需要本系统：康复训练、操控增强、精细作业的业务目标、成功标准与不可接受后果。</p>
+          </div>
+          <div class="card rv" style="--d:.18s">
+            <h4>StRS 相关方需求</h4><div class="en">STAKEHOLDER REQUIREMENT</div>
+            <p>从使用者、设备、算法、机构、管理者、合规方、开发团队、周边人员与数据伦理方的视角，列出各自需要与约束。</p>
+          </div>
+          <div class="card rv" style="--d:.26s">
+            <h4>OpsCon 运行概念</h4><div class="en">OPERATIONAL CONCEPT</div>
+            <p>面向本系统描述典型使用情境：谁在什么环境下、按什么流程使用，系统与相关方如何交互、何时介入或退出。</p>
+          </div>
+        </div>
+        <div class="card rv" style="--d:.34s">
+          <div class="en">STAKEHOLDER GROUPS · 相关方分组</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px">
+            <span class="chip">S1 使用者</span><span class="chip">S2 接口设备</span><span class="chip">S3 算法平台</span><span class="chip">S4 执行机构</span><span class="chip">S5 管理者</span><span class="chip">S6 合规机构</span><span class="chip">S7 开发团队</span><span class="chip">S9 周边人员</span><span class="chip">S10 伦理 / 数据方</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 10 作业二：需求矩阵 ===== -->
+    <section class="slide" data-chapter="HW-2">
+      <div class="chrome-top" style="position:static;padding:0 0 8px"><span>作业二 · 相关方需求表</span><span class="right">NEED → REQUIREMENT</span></div>
+      <div class="body">
+        <h2 class="st-title rv">12 条相关方需求：意图可理解、结果可感觉、出错可停</h2>
+        <div class="tblwrap rv" style="--d:.1s">
+          <table>
+            <colgroup><col style="width:9%"><col style="width:17%"><col style="width:52%"><col style="width:12%"><col style="width:10%"></colgroup>
+            <thead><tr><th>编号</th><th>相关方</th><th>需求要点</th><th>追溯</th><th>优先级</th></tr></thead>
+            <tbody>
+              <tr><td class="mono">R-01</td><td>S1 使用者</td><td>动作意图能被机器理解，约定动作类别输出对应指令，识别结果以离线与在线试次统计给出。</td><td class="mono">BRS 3.2</td><td>高</td></tr>
+              <tr><td class="mono">R-02</td><td>S1 使用者</td><td>机构位置、力或触觉结果被编码为可辨识反馈刺激，使用者对照试验可区分强度或位置。</td><td class="mono">StRS 6.2</td><td>高</td></tr>
+              <tr><td class="mono">R-03</td><td>S1 使用者</td><td>具备紧急断开路径：使用者或监督者触发后，机构在约定时限内进入被动安全状态。</td><td class="mono">BRS 4.3</td><td>高</td></tr>
+              <tr><td class="mono">R-04</td><td>S1 使用者</td><td>刺激强度、佩戴时长与电极接触条件在人体可承受范围，使用前后记录阻抗与皮肤状态。</td><td class="mono">StRS 4.3</td><td>高</td></tr>
+              <tr><td class="mono">R-05</td><td>S2 接口设备</td><td>采集链路提供信噪比、阻抗与接触状态监测，信号质量下降时给出明确提示。</td><td class="mono">StRS 4.3</td><td>中</td></tr>
+              <tr><td class="mono">R-06</td><td>S3 算法平台</td><td>每条指令附带置信度；置信度低于阈值时不直接驱动机构，转入降级路径。</td><td class="mono">StRS 4.2</td><td>高</td></tr>
+              <tr><td class="mono">R-07</td><td>S4 执行机构</td><td>指令经仲裁，机构运动顺应人的自主运动；具备机械与软件双重限位。</td><td class="mono">BRS 4.2</td><td>高</td></tr>
+              <tr><td class="mono">R-08</td><td>S5 管理者</td><td>校准记录、指令与反馈事件、异常事件可导出并按使用者编号留存，过程可监督追溯。</td><td class="mono">BRS 4.4</td><td>中</td></tr>
+              <tr><td class="mono">R-09</td><td>S6 合规机构</td><td>满足人机安全、隐私与知情同意要求；进入临床 / 真实作业前完成合规评审。</td><td class="mono">BRS 3.1</td><td>高</td></tr>
+              <tr><td class="mono">R-10</td><td>S7 开发团队</td><td>每条需求可追溯到 BRS 条目与相关方需要，并定义对应验证准则（MoE / MoS）。</td><td class="mono">BRS 7</td><td>中</td></tr>
+              <tr><td class="mono">R-11</td><td>S9 周边人员</td><td>机构运动范围避开周边人员可达区，或有人侵入时停止运动。</td><td class="mono">StRS 4.3</td><td>中</td></tr>
+              <tr><td class="mono">R-12</td><td>S10 伦理 / 数据方</td><td>原始生理数据端侧处理，研究使用前脱敏并取得知情同意，留存期限与访问权限明确。</td><td class="mono">BRS 3.4</td><td>高</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 11 作业三分隔 ===== -->
+    <section class="slide divider" data-chapter="HW-3">
+      <div class="ghost">03</div>
+      <p class="kicker rv" style="--d:.05s"><span class="bar"></span>ASSIGNMENT 3 · SyRS · 初始架构 · STPA 安全架构</p>
+      <h2 class="rv" style="--d:.15s">把相关方需求落成<br>系统需求、架构与安全约束</h2>
+      <p class="rv" style="--d:.25s">参照 ISO/IEC/IEEE 29148:2018 形成系统需求规格书，给出逻辑 / 功能 / 物理初始架构与控制框图；再在控制结构上做 STPA 分析，识别危险与不安全控制动作，导出可验证的安全需求。</p>
+      <div class="out rv" style="--d:.35s"><span class="tag machine">SyRS</span><span class="tag brass">初始架构</span><span class="tag alert">STPA · SR-01 ～ 10</span></div>
+    </section>
+
+    <!-- ===== 12 作业三：SyRS 需求分类 ===== -->
+    <section class="slide" data-chapter="HW-3">
+      <div class="chrome-top" style="position:static;padding:0 0 8px"><span>作业三 · 系统需求规格书</span><span class="right">SyRS</span></div>
+      <div class="body">
+        <h2 class="st-title rv">SyRS：技术视角的功能、性能、接口、质量与约束</h2>
+        <div class="cols-3">
+          <div class="card rv" style="--d:.1s"><h4>SYS-F 功能需求</h4><p>信号采集、意图解码、仲裁协同、执行控制、反馈回注、状态监控与降级；覆盖闭环内全部系统行为。</p></div>
+          <div class="card rv" style="--d:.16s"><h4>SYS-P 性能需求</h4><p>识别精度、闭环时延、反馈辨识、长时稳定性等性能边界；具体阈值待实验定基线。</p></div>
+          <div class="card rv" style="--d:.22s"><h4>SYS-I 接口需求</h4><p>人体—系统、子系统内部、系统—执行机构、监督管理、数据隐私五类接口，规定交换内容与约束边界。</p></div>
+          <div class="card rv" style="--d:.28s"><h4>SYS-Q 质量特性</h4><p>安全性、可靠性与容错、可维护性、环境适应性；安全项由 STPA 安全需求逐条追溯。</p></div>
+          <div class="card rv" style="--d:.34s"><h4>SYS-C 设计约束</h4><p>课程周期与现有实验条件、生物相容与安全优先、接口按五子系统标准化划分。</p></div>
+          <div class="card rv" style="--d:.40s"><h4>V&amp;V 验证确认</h4><p>功能靠试验与演示，质量靠分析、检查与场景用例；安全项按安全需求追溯到安全分析与确认。</p></div>
+        </div>
+        <div class="card rv" style="--d:.46s">
+          <div class="en">MODES · 运行模式（互锁）</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px">
+            <span class="chip">离线校准</span><span class="chip">在线闭环</span><span class="chip">被动待机</span><span class="chip">安全降级</span><span class="chip">维护模式</span>
+          </div>
+          <p style="margin-top:8px">需求追溯：StRS R-01 ～ R-12 逐条分解到 SYS-F / P / I / Q 条目，可向上回溯到相关方需要。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 13 作业三：初始架构 ===== -->
+    <section class="slide" data-chapter="HW-3">
+      <div class="chrome-top" style="position:static;padding:0 0 8px"><span>作业三 · 初始架构</span><span class="right">ARCHITECTURE</span></div>
+      <div class="body">
+        <h2 class="st-title rv">三视图初始架构与 STPA 控制框图</h2>
+        <div class="cols-3">
+          <div class="card rv" style="--d:.1s"><h4>逻辑架构</h4><p>功能元素及其逻辑关系：上行意图链、下行反馈链与贯穿全程的监控旁路，独立于实现选型。</p></div>
+          <div class="card rv" style="--d:.18s"><h4>功能架构</h4><p>输入流到输出流的转换：采集—解码—仲裁—执行；状态感知—反馈编码—刺激回注；监控旁路全程旁路监测。</p></div>
+          <div class="card rv" style="--d:.26s"><h4>物理架构</h4><p>逻辑与功能元素分配到五个物理子系统，含硬件、软件、数据与人的角色；子系统可独立测试、独立失效。</p></div>
+        </div>
+        <div class="fig rv" style="--d:.34s">
+          <svg viewBox="0 0 1040 230" role="img" aria-label="系统控制框图：监督者、控制器、执行器、被控过程、传感器与环境构成命令反馈回路">
+            <defs><marker id="a3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9aa8a1"/></marker></defs>
+            <rect x="30" y="80" width="150" height="70" fill="#efe4cb" stroke="#8f6412"/>
+            <text x="105" y="110" text-anchor="middle" font-size="13.5" font-weight="700" fill="#6b4a0e">监督者</text>
+            <text x="105" y="130" text-anchor="middle" font-size="10" fill="#8f6412" font-family="IBM Plex Mono,monospace">supervisor / E-stop</text>
+
+            <rect x="270" y="80" width="170" height="70" fill="#d8e1ed" stroke="#274c7c"/>
+            <text x="355" y="110" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1d3a60">控制器</text>
+            <text x="355" y="130" text-anchor="middle" font-size="10" fill="#3a567f" font-family="IBM Plex Mono,monospace">decode · arbitration · monitor</text>
+
+            <rect x="520" y="80" width="150" height="70" fill="#fff" stroke="#274c7c"/>
+            <text x="595" y="110" text-anchor="middle" font-size="13.5" font-weight="600" fill="#101a17">执行器</text>
+            <text x="595" y="130" text-anchor="middle" font-size="10" fill="#5b6b64" font-family="IBM Plex Mono,monospace">drive · stimulation</text>
+
+            <rect x="760" y="80" width="170" height="70" fill="#d7e8e2" stroke="#146b5a"/>
+            <text x="845" y="110" text-anchor="middle" font-size="13.5" font-weight="700" fill="#0f4f42">被控过程</text>
+            <text x="845" y="130" text-anchor="middle" font-size="10" fill="#3c6a60" font-family="IBM Plex Mono,monospace">limb · exoskeleton · object</text>
+
+            <rect x="520" y="178" width="170" height="40" fill="#fff" stroke="#146b5a"/>
+            <text x="605" y="203" text-anchor="middle" font-size="12" font-weight="600" fill="#0f4f42">传感器：采集 / 状态力觉感知</text>
+
+            <path d="M180 115 L266 115" fill="none" stroke="#9aa8a1" stroke-width="1.6" marker-end="url(#a3)"/>
+            <path d="M440 115 L516 115" fill="none" stroke="#9aa8a1" stroke-width="1.6" marker-end="url(#a3)"/>
+            <path d="M670 115 L756 115" fill="none" stroke="#9aa8a1" stroke-width="1.6" marker-end="url(#a3)"/>
+            <path d="M760 150 L690 178" fill="none" stroke="#146b5a" stroke-width="1.6" marker-end="url(#a3)"/>
+            <path d="M520 198 L444 146" fill="none" stroke="#146b5a" stroke-width="1.6" marker-end="url(#a3)"/>
+            <text x="30" y="40" font-size="11" fill="#5b6b64" font-family="IBM Plex Mono,monospace">CONTROL STRUCTURE FOR STPA · 命令—反馈回路</text>
+          </svg>
+          <p class="fig-cap">图 3-1　控制框图：监督者—控制器—执行器—被控过程—传感器，环境作为外部扰动纳入结构。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 14 作业三：STPA 安全分析 ===== -->
+    <section class="slide" data-chapter="HW-3">
+      <div class="chrome-top" style="position:static;padding:0 0 8px"><span>作业三 · STPA 安全分析</span><span class="right">HAZARD → UCA → SR</span></div>
+      <div class="body">
+        <h2 class="st-title rv">沿控制链路分析：危险 → 不安全控制动作 → 安全需求</h2>
+        <div class="chain" style="grid-template-columns:1fr 1fr 1fr">
+          <div class="node rv" style="--d:.1s">
+            <div class="no">STEP 1 危险 H</div>
+            <h4>6 类危险</h4>
+            <p>H-01 误触发；H-02 幅度 / 力 / 方向越界；H-03 刺激超限；H-04 危险状态未停止降级；H-05 数据未授权；H-06 反馈缺失错位。</p>
+          </div>
+          <div class="node rv" style="--d:.2s">
+            <div class="no">STEP 2–3 不安全控制动作</div>
+            <h4>UCA-01 ～ 09</h4>
+            <p>应提供未提供、提供不安全动作、错误时机、持续过久、反馈缺失错误、拦截未拦截、控制动作缺失，覆盖控制器、执行器、传感器与监督链路。</p>
+          </div>
+          <div class="node rv" style="--d:.3s">
+            <div class="no">STEP 4 安全需求 SR</div>
+            <h4>SR-01 ～ 10</h4>
+            <p>信号与置信度门控、未识别兜底、双通道限位、硬件限流超时、失效被动安全、反馈一致性告警、急停硬链路、数据分级授权、侵入检测、模式互锁。</p>
+          </div>
+        </div>
+        <div class="cols-2">
+          <div class="card rv" style="--d:.38s">
+            <h4>安全架构三层实现</h4>
+            <p>主控层负责放行与仲裁；独立安全监控层直读传感器与指令、旁路监控越界；执行与刺激层在联锁 / 降级 / 切断指令下动作；急停硬链路独立于主控、直抵执行层，不可被软件覆盖。</p>
+          </div>
+          <div class="card rv" style="--d:.46s">
+            <h4>降级层次</h4>
+            <p>在线闭环 → 柔顺辅助 → 被动支撑 → 急停断开；任一单点失效不产生不可控动作，超时后回到被动安全状态，上电不自恢复、需人工确认。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 15 作业四分隔 ===== -->
+    <section class="slide divider" data-chapter="HW-4">
+      <div class="ghost">04</div>
+      <p class="kicker rv" style="--d:.05s"><span class="bar"></span>ASSIGNMENT 4 · 场景分层 · 设计运行条件 · 风险场景</p>
+      <h2 class="rv" style="--d:.15s">在什么环境、什么条件下<br>以何种风险运行</h2>
+      <p class="rv" style="--d:.25s">先做环境场景分层与要素梳理，参照 ISO 34503 与 DORAD 框架设定 ODC（设计运行范围、系统状态、人员状态）；选取典型场景详述，并在 STPA 结论基础上形成分级风险场景列表。</p>
+      <div class="out rv" style="--d:.35s"><span class="tag plum">场景分层</span><span class="tag machine">ODC</span><span class="tag alert">RS-01 ～ RS-12</span></div>
+    </section>
+
+    <!-- ===== 16 作业四：场景分层与 ODC ===== -->
+    <section class="slide" data-chapter="HW-4">
+      <div class="chrome-top" style="position:static;padding:0 0 8px"><span>作业四 · 场景与条件</span><span class="right">LAYERS · ODC</span></div>
+      <div class="body">
+        <h2 class="st-title rv">场景三层抽象、环境六层要素与 ODC 三类条件</h2>
+        <div class="cols-3">
+          <div class="card rv" style="--d:.1s">
+            <h4>场景三层抽象</h4>
+            <ul>
+              <li><b>功能场景</b>：自然语言描述任务与目标。</li>
+              <li><b>逻辑场景</b>：变量、取值区间与约束关系。</li>
+              <li><b>具体场景</b>：给定初始条件与参数的实例。</li>
+            </ul>
+          </div>
+          <div class="card rv" style="--d:.18s">
+            <h4>任务环境六层</h4>
+            <ul>
+              <li>L1 任务与场地 · L2 人体与生理</li>
+              <li>L3 交互对象 · L4 物理环境条件</li>
+              <li>L5 数字与链路 · L6 临时扰动</li>
+            </ul>
+            <p style="margin-top:6px">由静态背景向动态扰动逐层收敛，要素均可观测、可判定允许 / 不允许。</p>
+          </div>
+          <div class="card rv" style="--d:.26s">
+            <h4>ODC 三类条件</h4>
+            <ul>
+              <li><b>设计运行范围 ODD</b>：场地、对象、人员、物理与数字外部条件。</li>
+              <li><b>系统状态</b>：自检、模式、信号、解码、运动、刺激、反馈、故障。</li>
+              <li><b>人员状态</b>：使用者、监督者、周边人员。</li>
+            </ul>
+          </div>
+        </div>
+        <div class="card rv" style="--d:.34s">
+          <p>条件成对描述：每项给出允许条件与越界条件；系统持续监控 ODC 与自身状态，即将越界时触发提示、柔顺辅助或降级，不满足条件时不进入在线闭环。定量阈值 <span class="tba">tba</span>，待实验定基线。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 17 作业四：典型场景 S-01 ===== -->
+    <section class="slide" data-chapter="HW-4">
+      <div class="chrome-top" style="position:static;padding:0 0 8px"><span>作业四 · 典型场景</span><span class="right">SCENARIO S-01</span></div>
+      <div class="body">
+        <h2 class="st-title rv">典型场景 S-01：上肢康复训练柔顺辅助</h2>
+        <p class="st-lead rv" style="--d:.08s">在受控康复训练室、包络已标定、使用者上肢在位且自检通过的条件下，使用者通过屈曲 / 伸展意图触发外骨骼柔顺辅助完成一组训练；监督者在岗可介入，系统在限位与刺激限幅内闭环运行并回注感觉反馈。</p>
+        <div class="fig rv" style="--d:.16s">
+          <svg viewBox="0 0 1040 150" role="img" aria-label="典型场景六阶段时序与异常降级分支">
+            <defs><marker id="a4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9aa8a1"/></marker></defs>
+            <g font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#5b6b64">
+              <rect x="14" y="30" width="150" height="56" fill="#e7e1ef" stroke="#5b4a7d"/><text x="89" y="55" text-anchor="middle" font-size="13" font-weight="700" fill="#3f3258">准备与自检</text><text x="89" y="73" text-anchor="middle">self-check · donning</text>
+              <rect x="194" y="30" width="150" height="56" fill="#fff" stroke="#8f6412"/><text x="269" y="55" text-anchor="middle" font-size="13" font-weight="600" fill="#101a17">意图采集</text><text x="269" y="73" text-anchor="middle">signal acquisition</text>
+              <rect x="374" y="30" width="150" height="56" fill="#fff" stroke="#274c7c"/><text x="449" y="55" text-anchor="middle" font-size="13" font-weight="600" fill="#101a17">解码仲裁</text><text x="449" y="73" text-anchor="middle">decode · arbitration</text>
+              <rect x="554" y="30" width="150" height="56" fill="#d8e1ed" stroke="#274c7c" stroke-width="1.2"/><text x="629" y="55" text-anchor="middle" font-size="13" font-weight="700" fill="#1d3a60">柔顺辅助</text><text x="629" y="73" text-anchor="middle">assist · exoskeleton</text>
+              <rect x="734" y="30" width="150" height="56" fill="#d7e8e2" stroke="#146b5a" stroke-width="1.2"/><text x="809" y="55" text-anchor="middle" font-size="13" font-weight="700" fill="#0f4f42">反馈回注</text><text x="809" y="73" text-anchor="middle">feedback · stimulation</text>
+              <rect x="914" y="30" width="116" height="56" fill="#fff" stroke="#8f6412"/><text x="972" y="55" text-anchor="middle" font-size="13" font-weight="600" fill="#101a17">记录复盘</text><text x="972" y="73" text-anchor="middle">log · review</text>
+              <path d="M164 58 L190 58" fill="none" stroke="#9aa8a1" stroke-width="1.6" marker-end="url(#a4)"/>
+              <path d="M344 58 L370 58" fill="none" stroke="#9aa8a1" stroke-width="1.6" marker-end="url(#a4)"/>
+              <path d="M524 58 L550 58" fill="none" stroke="#9aa8a1" stroke-width="1.6" marker-end="url(#a4)"/>
+              <path d="M704 58 L730 58" fill="none" stroke="#146b5a" stroke-width="1.6" marker-end="url(#a4)"/>
+              <path d="M884 58 L910 58" fill="none" stroke="#9aa8a1" stroke-width="1.6" marker-end="url(#a4)"/>
+            </g>
+            <rect x="374" y="108" width="430" height="30" fill="#f3ddd9" stroke="#a93a2c" stroke-dasharray="6 4"/>
+            <text x="589" y="127" text-anchor="middle" font-size="11" fill="#7c2a20">异常分支：信号 / 置信度 / 限位 / 刺激 / 侵入 / 断链 → 柔顺辅助 → 被动支撑 → 急停断开</text>
+          </svg>
+          <p class="fig-cap">图 4-1　S-01 正常闭环链与异常降级分支（衔接作业三降级层次）</p>
+        </div>
+        <div class="cols-2">
+          <div class="card rv" style="--d:.24s"><h4>效果度量 MoE</h4><p>完成规定试次与动作幅度；辅助顺应自主运动、不对抗；使用者可辨识反馈；过程无超限刺激与安全事件。基线 <span class="tba">tba</span>。</p></div>
+          <div class="card rv" style="--d:.32s"><h4>适用性度量 MoS</h4><p>佩戴与启动可在监督者协助下完成；异常可被使用者与监督者感知；记录完整可追溯；ODC 边界与降级路径被实际触发验证。</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 18 作业四：风险场景列表 ===== -->
+    <section class="slide" data-chapter="HW-4">
+      <div class="chrome-top" style="position:static;padding:0 0 8px"><span>作业四 · 风险场景列表</span><span class="right">RISK SCENARIOS</span></div>
+      <div class="body">
+        <h2 class="st-title rv">12 个风险场景：正常 1 · 临界 4 · 事故 7</h2>
+        <div class="cols-3">
+          <div class="card rv" style="--d:.1s">
+            <h4><span class="tier normal">正常</span>　基准闭环</h4>
+            <p><b>RS-01</b> 上肢康复训练闭环正常完成一组试次；ODC 全部满足、自检通过、人员状态正常，在线闭环运行并记录复盘。</p>
+          </div>
+          <div class="card rv" style="--d:.18s">
+            <h4><span class="tier critical">临界</span>　可经降级恢复</h4>
+            <ul>
+              <li><b>RS-02</b> 信号质量下降、存在误判苗头</li>
+              <li><b>RS-03</b> 解码置信度不足或类别模糊</li>
+              <li><b>RS-04</b> 周边人员接近作业空间</li>
+              <li><b>RS-11</b> 使用者疲劳或出现不适</li>
+            </ul>
+          </div>
+          <div class="card rv" style="--d:.26s">
+            <h4><span class="tier accident">事故</span>　需安全需求拦截</h4>
+            <ul>
+              <li><b>RS-05</b> 伪迹被解码为意图、误触发</li>
+              <li><b>RS-06</b> 机构幅度 / 力 / 方向越界</li>
+              <li><b>RS-07</b> 反馈刺激强度 / 时长超限</li>
+              <li><b>RS-08</b> 断链 / 断电失去保持</li>
+              <li><b>RS-09</b> 反馈缺失错位致误判</li>
+              <li><b>RS-10</b> 急停失效、无法拦截</li>
+              <li><b>RS-12</b> 生理数据未授权访问</li>
+            </ul>
+          </div>
+        </div>
+        <div class="card rv" style="--d:.34s">
+          <p>风险场景与作业三危险 H-01 ～ H-06、不安全控制动作 UCA-01 ～ 09、安全需求 SR-01 ～ 10 一一对应；兜底策略涵盖联合门控、双通道限位、硬件限流、被动安全、一致性告警、急停硬链路、侵入检测与数据分级授权。分级为课程原型阶段初判，概率—严重度量化留待后续。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 19 总结：追溯链与结论 ===== -->
+    <section class="slide" data-chapter="SUMMARY">
+      <div class="chrome-top" style="position:static;padding:0 0 8px"><span>总结</span><span class="right">TRACEABILITY</span></div>
+      <div class="body">
+        <h2 class="st-title rv">四次作业串成一条可追溯的系统工程链</h2>
+        <div class="chain" style="grid-template-columns:repeat(5,1fr)">
+          <div class="node rv" style="--d:.1s"><div class="no">HW-1</div><h4>体系与解剖</h4><p>六层定位、三子路、五子系统、双向闭环。</p></div>
+          <div class="node rv" style="--d:.18s"><div class="no">HW-2</div><h4>相关方需求</h4><p>BRS / StRS 分析，R-01 ～ R-12。</p></div>
+          <div class="node rv" style="--d:.26s"><div class="no">HW-3</div><h4>系统需求与安全</h4><p>SyRS 分类需求，架构与控制框图，SR-01 ～ 10。</p></div>
+          <div class="node rv" style="--d:.34s"><div class="no">HW-4</div><h4>场景与风险</h4><p>环境分层、ODC 三类条件，RS-01 ～ 12。</p></div>
+          <div class="node rv" style="--d:.42s"><div class="no">V&amp;V</div><h4>验证闭环</h4><p>需求—场景—用例—试验沿追溯链回溯。</p></div>
+        </div>
+        <div class="cols-2">
+          <div class="card rv" style="--d:.4s">
+            <h4>主要结论</h4>
+            <ul>
+              <li>系统成立的前提是双向闭环：上行意图、下行感觉，时序对齐。</li>
+              <li>安全监控旁路独立于主控放行路径，危险状态进入可预测降级。</li>
+              <li>每条需求、每个风险场景都可向上追溯到相关方需要与危险分析。</li>
+            </ul>
+          </div>
+          <div class="card rv" style="--d:.48s">
+            <h4>后续待办</h4>
+            <ul>
+              <li>以对照实验标定识别精度、时延、辨识率等基线阈值。</li>
+              <li>补充合规与伦理评审，进入真实场景前完成专项安全验证。</li>
+              <li>对风险场景做概率—严重度量化与致因场景细化。</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 20 结束页 ===== -->
+    <section class="slide cover" data-chapter="END">
+      <p class="kicker rv" style="--d:.05s"><span class="bar"></span>复杂系统工程课程 · 小组课题汇报</p>
+      <h1 class="rv" style="--d:.15s">感谢聆听<br><em>Thanks for your attention · 敬请批评指正</em></h1>
+      <p class="cover-sub rv" style="--d:.25s">机器增强的人机混合神经系统 · 吉林大学车辆工程 · 第 3 组。四次作业完整书面内容见同站独立页面，可在目录页跳转查阅。</p>
+      <div class="cover-meta">
+        <div class="rv" style="--d:.32s"><dt>作业一</dt><dd>体系梳理与系统解剖</dd></div>
+        <div class="rv" style="--d:.38s"><dt>作业二</dt><dd>BRS / StRS 需求定义</dd></div>
+        <div class="rv" style="--d:.44s"><dt>作业三</dt><dd>SyRS · 架构 · STPA</dd></div>
+        <div class="rv" style="--d:.50s"><dt>作业四</dt><dd>场景 · ODC · 风险</dd></div>
+      </div>
+    </section>
+
+    <div class="chrome-bottom">
+      <span id="footNote">使用 ← → 方向键或下方按钮翻页</span>
+      <div class="controls">
+        <button class="navbtn" id="prevBtn" aria-label="上一页">← 上一页</button>
+        <div class="dots" id="dots"></div>
+        <button class="navbtn" id="nextBtn" aria-label="下一页">下一页 →</button>
+        <span class="counter"><b id="cur">1</b> / <span id="total">20</span></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const slides=[...document.querySelectorAll('.slide')];
+  const total=slides.length;
+  const dots=document.getElementById('dots');
+  const curEl=document.getElementById('cur');
+  const totalEl=document.getElementById('total');
+  const prog=document.getElementById('progress');
+  const topChapter=document.getElementById('topChapter');
+  totalEl.textContent=total;
+  let idx=0;
+
+  slides.forEach((s,i)=>{
+    const d=document.createElement('button');
+    d.className='dot';d.setAttribute('aria-label','第 '+(i+1)+' 页');
+    d.addEventListener('click',()=>go(i));
+    dots.appendChild(d);
+  });
+  const dotEls=[...dots.children];
+
+  function go(n){
+    idx=Math.max(0,Math.min(total-1,n));
+    slides.forEach((s,i)=>{s.classList.toggle('active',i===idx)});
+    dotEls.forEach((d,i)=>d.classList.toggle('on',i===idx));
+    curEl.textContent=idx+1;
+    prog.style.width=((idx+1)/total*100)+'%';
+    topChapter.textContent=slides[idx].dataset.chapter||'';
+    if(history.replaceState){history.replaceState(null,'','#/'+(idx+1))}
+  }
+
+  document.getElementById('prevBtn').addEventListener('click',()=>go(idx-1));
+  document.getElementById('nextBtn').addEventListener('click',()=>go(idx+1));
+
+  document.addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key==='PageDown'||e.key===' '){e.preventDefault();go(idx+1)}
+    else if(e.key==='ArrowLeft'||e.key==='ArrowUp'||e.key==='PageUp'){e.preventDefault();go(idx-1)}
+    else if(e.key==='Home'){go(0)}
+    else if(e.key==='End'){go(total-1)}
+  });
+
+  // 信号流虚线持续流动（尊重 reduced motion）
+  const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(!reduce){
+    document.querySelectorAll('.sig').forEach(p=>{
+      p.style.strokeDasharray='10 7';
+      p.style.animation='dashflow .8s linear infinite';
+    });
+    const st=document.createElement('style');
+    st.textContent='@keyframes dashflow{from{stroke-dashoffset:0}to{stroke-dashoffset:-17}}';
+    document.head.appendChild(st);
+  }
+
+  // 起始页码：hash #/n
+  const m=(location.hash||'').match(/\d+/);
+  go(m?Math.min(total,Math.max(1,parseInt(m[0],10)))-1:0);
+})();
+</script>
+</body>
+</html>

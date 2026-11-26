@@ -4,15 +4,18 @@
 
 本仓库同时承担两件事：**课题门面**（对外说明我们研究什么、在六层体系里处于哪一层）与**过程档案**（每次作业的结论、依据和遗留问题都在这里留痕，可直接交给任课老师查阅）。
 
-## 页面结构（同一链接，三个独立页面）
+## 页面结构（同一链接，五个作业页 + 一份汇报演示稿）
 
 | 文件 | 对应作业 | 说明 |
 | ---- | ---- | ---- |
-| `index.html` | 目录入口 | 站点首页：列出作业一、作业二的标题与内容概述，点击卡片跳转到对应作业页面。 |
+| `index.html` | 目录入口 | 站点首页：列出作业一至作业四的标题与内容概述，点击卡片跳转到对应作业页面；顶部横幅进入汇报演示稿。 |
 | `assignment-1.html` | 作业一 | 六层体系梳理与系统解剖：定位、六层要素、三层通路、信号闭环、验证指标、作业归档、进度时间轴。 |
 | `assignment-2.html` | 作业二 | BRS / StRS 业务与相关方需求定义，独立成页，不与作业一混排。 |
+| `assignment-3.html` | 作业三 | SyRS 系统需求规格书、初始系统架构与控制框图、基于 STPA 的安全需求与安全架构，独立成页。 |
+| `assignment-4.html` | 作业四 | 场景分层、场景要素梳理、设计运行条件 ODC（运行范围 / 系统状态 / 人员状态）、典型场景详细论述与风险场景列表，独立成页。 |
+| `presentation.html` | 汇报演示稿 | 20 页 16:9 类 PPT 学术汇报：封面、推进逻辑链、四章分隔与内容页、追溯总结与结束页；支持键盘方向键 / 按钮 / 圆点翻页，含章节渐显与信号流动画。 |
 
-三个页面互相挂好链接：目录卡片分别指向两个作业页面；两个作业页面顶栏都有「← 目录」返回 `index.html`。部署到 GitHub Pages 后，老师点开目录链接即可看到两次作业，两次作业仍是分开的独立页面。
+五个页面互相挂好链接：目录卡片分别指向四个作业页面；四个作业页面顶栏都有「← 返回目录」回到 `index.html`。部署到 GitHub Pages 后，老师点开目录链接即可看到四次作业，四次作业仍是分开的独立页面。
 
 ### 各页面内容
 
@@ -26,8 +29,15 @@
 | `assignment-1.html` | 作业提交 | 作业清单、对应章节、提交位置与状态 |
 | `assignment-1.html` | 进度 | 从选题到期末汇报的时间节点 |
 | `assignment-2.html` | 需求定义 | ConOps / OpsCon 辨析、BRS 八章、StRS 八章、10 类相关方矩阵、3 个运行场景、12 条 Need→Requirement 需求表、质量自检与缩写表 |
+| `assignment-3.html` | SyRS | 简介、总体描述、功能 / 性能 / 接口 / 质量特性需求、设计约束、V&V 验证准则，StRS R-01～R-12 → SyRS 追溯映射 |
+| `assignment-3.html` | 初始架构 | 逻辑 / 功能 / 物理三视图、功能架构图、五子系统物理划分表、系统控制框图 |
+| `assignment-3.html` | 安全分析 | STPA 四步：损失 / 危险、9 条 UCA、10 条致因场景 → SR 安全需求；独立监控层与急停硬链路安全架构 |
+| `assignment-4.html` | 场景分层 | 功能 / 逻辑 / 具体三层抽象；任务环境六层划分（场地任务、人体生理、交互对象、物理环境、数字链路、临时扰动）与要素梳理表 |
+| `assignment-4.html` | ODC | 设计运行范围 ODD、系统状态、人员状态三类条件，允许 / 越界条件成对描述，参照 ISO 34503 / DORAD 框架 |
+| `assignment-4.html` | 典型场景 | S-01 上肢康复训练柔顺辅助：角色、前置条件、时序信息流、MoE / MoS、三层抽象写法与需求追溯 |
+| `assignment-4.html` | 风险场景 | 12 条风险场景列表（正常 / 临界 / 事故三档），衔接作业三 SR-01～SR-10 |
 
-三个 HTML 均为自包含文件：CSS、JS、图形全部内联，没有外部依赖（除字体 CDN），双击即可打开。
+五个 HTML 均为自包含文件：CSS、JS、图形全部内联，没有外部依赖（除字体 CDN），双击即可打开。
 
 ## 目录结构
 
@@ -36,6 +46,9 @@
 ├── index.html         # 目录入口页（作业卡片跳转）
 ├── assignment-1.html # 作业一：六层体系梳理与系统解剖
 ├── assignment-2.html # 作业二：BRS / StRS 需求定义
+├── assignment-3.html # 作业三：SyRS / 初始架构 / STPA 安全架构
+├── assignment-4.html # 作业四：场景分层 / 场景要素 / ODC / 典型场景
+├── presentation.html # 学术汇报演示稿（20 页 16:9 幻灯片）
 ├── README.md         # 本说明
 └── docs/              # 每次作业的书面稿与图（可自行创建）
 ```
@@ -55,7 +68,7 @@ python -m http.server 8000
 ### 方式一：网页上传（不用命令行）
 
 1. 在 GitHub 新建仓库，例如 `hmns-project`，可见性选 Public。
-2. 进入仓库 → **Add file → Upload files**，把 `index.html`、`assignment-1.html`、`assignment-2.html` 和 `README.md` 一起拖进去 → Commit。
+2. 进入仓库 → **Add file → Upload files**，把 `index.html`、`assignment-1.html`、`assignment-2.html`、`assignment-3.html`、`assignment-4.html`、`presentation.html` 和 `README.md` 一起拖进去 → Commit。
 3. 进入 **Settings → Pages**，`Source` 选 **Deploy from a branch**，分支选 `main`，目录选 `/ (root)`，保存。
 4. 等 1–2 分钟，访问 `https://<你的用户名>.github.io/hmns-project/`。
 
@@ -68,7 +81,7 @@ git init
 
 git add .
 
-git commit -m "init: 课题站点（目录 + 作业一 + 作业二）"
+git commit -m "init: 课题站点（目录 + 作业一 + 作业二 + 作业三）"
 
 git branch -M main
 
@@ -95,8 +108,8 @@ git push -u origin main
 ## 作业提交流程
 
 1. 新作业单独做一个 `assignment-N.html`，并在 `index.html` 目录页补一张对应卡片。
-2. 提交一次 commit，commit message 写 `HW-2: BRS / StRS 需求定义` 这样的格式。
-3. 开一条 Issue，标题 `[HW-2] BRS / StRS 需求定义`，正文按模板写三节：
+2. 提交一次 commit，commit message 写 `HW-3: SyRS / 初始架构 / STPA 安全架构` 这样的格式。
+3. 开一条 Issue，标题 `[HW-3] SyRS / 初始架构 / STPA 安全架构`，正文按模板写三节：
 
 ```
 ## 结论

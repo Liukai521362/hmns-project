@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>作业四 · 场景分层 / 场景要素 / 设计运行条件 ODC / 典型场景 · 人机混合神经系统课题</title>
+<meta name="description" content="复杂系统工程课程第四次作业：机器增强的人机混合神经系统的场景分层、场景要素梳理、设计运行条件 ODC（设计运行范围 / 系统状态 / 人员状态）、典型场景详细论述与风险场景列表。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23101a17'/%3E%3Cpath d='M6 16h4l3-7 4 14 3-7h4' stroke='%235b4a7d' stroke-width='2.4' fill='none' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Serif+SC:wght@500;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --ink:#101a17; --paper:#f3f5f2; --paper-2:#e7ebe6; --line:#c6cfc8; --line-strong:#9aa8a1;
+  --muted:#5b6b64; --bio:#146b5a; --bio-soft:#d7e8e2; --brass:#8f6412; --brass-soft:#efe4cb;
+  --machine:#274c7c; --machine-soft:#d8e1ed; --alert:#a93a2c; --alert-soft:#f3ddd9;
+  --plum:#5b4a7d; --plum-soft:#e7e1ef;
+  --serif:"Noto Serif SC","Songti SC",serif; --sans:"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace; --maxw:1180px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:var(--sans);font-weight:400;font-size:16px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+  background-image:linear-gradient(to right,rgba(16,26,23,.045) 1px,transparent 1px),linear-gradient(to bottom,rgba(16,26,23,.045) 1px,transparent 1px);
+  background-size:64px 64px;
+}
+a{color:var(--machine);text-decoration:none;border-bottom:1px solid rgba(39,76,124,.3)}
+a:hover{border-bottom-color:var(--machine)}
+::selection{background:var(--plum);color:#fff}
+:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px clamp(16px,4vw,48px);background:rgba(243,245,242,.92);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:baseline;gap:10px;font-family:var(--mono);font-size:12.5px;letter-spacing:.02em;color:var(--muted)}
+.brand b{font-family:var(--sans);font-weight:700;font-size:13.5px;color:var(--ink)}
+.brand .dot{width:6px;height:6px;background:var(--plum);border-radius:50%;align-self:center}
+.badge{font-family:var(--mono);font-size:11px;color:var(--plum);border:1px solid var(--plum);padding:3px 9px;border-radius:1px}
+.topbar-right{display:flex;align-items:center;gap:12px}
+.back{font-family:var(--mono);font-size:12px;color:var(--muted);border-bottom:0;padding:6px 10px}
+.back:hover{color:var(--ink)}
+
+.shell{max-width:var(--maxw);margin:0 auto;padding:0 clamp(16px,4vw,48px)}
+.hero{padding:clamp(40px,6vw,72px) 0 clamp(28px,4vw,44px)}
+.kicker{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;color:var(--plum);letter-spacing:.04em;margin:0 0 22px}
+.kicker span.bar{display:block;width:28px;height:1px;background:var(--plum)}
+h1.hero-title{font-family:var(--serif);font-weight:900;font-size:clamp(30px,5.4vw,52px);line-height:1.12;letter-spacing:-.01em;margin:0 0 8px}
+h1.hero-title em{font-style:normal;color:var(--plum);display:block;font-size:clamp(18px,2.6vw,26px);font-weight:600;letter-spacing:.02em;margin-top:12px;line-height:1.5}
+.hero-sub{max-width:62ch;color:var(--muted);font-size:15.5px;line-height:1.9;margin:20px 0 0}
+.hero-meta{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;margin:36px 0 0;border-top:1px solid var(--line-strong)}
+.hero-meta div{padding:14px 16px 14px 0;border-right:1px solid var(--line)}
+.hero-meta div:last-child{border-right:0}
+.hero-meta dt{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.06em;margin:0 0 6px}
+.hero-meta dd{margin:0;font-size:13.5px;line-height:1.5;font-weight:500}
+
+section.blk{padding:clamp(32px,5vw,56px) 0;border-top:1px solid var(--line)}
+.blk-head{display:grid;grid-template-columns:196px minmax(0,1fr);gap:clamp(16px,3vw,40px);margin-bottom:30px}
+.blk-no{font-family:var(--mono);font-size:12px;color:var(--muted);line-height:1.6}
+.blk-no b{display:block;font-family:var(--serif);font-size:30px;font-weight:700;color:var(--ink);line-height:1}
+.blk-no i{display:block;font-style:normal;margin-top:8px;letter-spacing:.06em}
+.blk-title{font-family:var(--serif);font-weight:700;font-size:clamp(21px,3vw,29px);line-height:1.3;margin:0 0 10px}
+.blk-lead{margin:0;color:var(--muted);max-width:64ch;font-size:15px}
+.blk-body{display:grid;grid-template-columns:196px minmax(0,1fr);gap:clamp(16px,3vw,40px)}
+.blk-body .side{border-top:1px solid var(--line);padding-top:12px;font-family:var(--mono);font-size:11.5px;color:var(--muted);line-height:1.9;letter-spacing:.02em}
+.blk-body .side p{margin:0 0 8px}
+.blk-body .main{min-width:0}
+
+.grid-2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px}
+.factbox{border:1px solid var(--line);background:#fff;padding:clamp(16px,2vw,22px)}
+.factbox h4{font-family:var(--serif);font-size:16.5px;font-weight:700;margin:0 0 8px}
+.factbox p{margin:0;font-size:13.5px;line-height:1.8;color:#33413c}
+.subnote{font-size:12.5px;color:var(--muted);margin:10px 0 0}
+
+.sec-sub{margin:26px 0 0;font-family:var(--serif);font-size:17px;font-weight:700}
+.sec-sub .no{font-family:var(--mono);font-size:11px;color:var(--plum);margin-right:8px;letter-spacing:.06em}
+
+.doc{border:1px solid var(--line-strong);background:#fff;margin-top:22px}
+.doc-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;padding:16px 18px;border-bottom:1px solid var(--line)}
+.doc-head .tag{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:#fff;padding:3px 9px}
+.doc-head .tag.sc{background:var(--plum)}
+.doc-head h3{font-family:var(--serif);font-size:17px;font-weight:700;margin:0}
+.doc-head .meta{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.doc-sec{display:grid;grid-template-columns:178px minmax(0,1fr);border-top:1px solid var(--line)}
+.doc-sec:first-of-type{border-top:0}
+.doc-sec dt{padding:14px 16px;font-family:var(--mono);font-size:11.5px;color:var(--muted);border-right:1px solid var(--line);line-height:1.7}
+.doc-sec dt b{display:block;font-family:var(--sans);font-size:13px;color:var(--ink);font-weight:700}
+.doc-sec dd{margin:0;padding:14px 16px;font-size:13.5px;line-height:1.8;color:#33413c}
+.doc-sec dd p{margin:0 0 8px}
+.doc-sec dd p:last-child{margin-bottom:0}
+.doc-sec dd ul{margin:0;padding-left:18px}
+.doc-sec dd li{margin-bottom:4px}
+.doc-sec dd .lab{font-family:var(--mono);font-size:11px;color:var(--brass);margin-right:6px}
+
+.tblhint{display:none}
+.tblwrap{border:1px solid var(--line-strong);background:#fff;overflow-x:auto}
+table{width:100%;border-collapse:collapse;table-layout:fixed;min-width:620px}
+th,td{text-align:left;vertical-align:top;padding:11px 12px;border-bottom:1px solid var(--line);font-size:13px;line-height:1.6}
+th{font-family:var(--mono);font-size:11px;letter-spacing:.05em;color:var(--muted);font-weight:500;background:var(--paper);border-bottom-color:var(--line-strong)}
+tbody tr:last-child td{border-bottom:0}
+td code,.mono{font-family:var(--mono);font-size:12px}
+.tba{font-family:var(--mono);font-size:11px;color:var(--brass)}
+
+.archwrap{border:1px solid var(--line);background:#fff;padding:clamp(14px,2vw,22px);margin-top:22px}
+.archwrap svg{display:block;width:100%;height:auto}
+.arch-cap{font-family:var(--mono);font-size:11px;color:var(--muted);margin:10px 0 0;letter-spacing:.03em}
+
+.view-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px;margin-top:22px}
+.view{border:1px solid var(--line);background:#fff;padding:clamp(16px,2vw,20px)}
+.view h4{font-family:var(--serif);font-size:15.5px;font-weight:700;margin:0 0 6px}
+.view .sen{font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:.05em;margin-bottom:8px}
+.view p{margin:0;font-size:13px;line-height:1.75;color:#33413c}
+
+.safe-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px;margin-top:22px}
+.safe{border:1px solid var(--line);background:#fff;padding:clamp(16px,2vw,20px)}
+.safe h4{font-family:var(--serif);font-size:15.5px;font-weight:700;margin:0 0 6px;color:var(--alert)}
+.safe .sen{font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:.05em;margin-bottom:8px}
+.safe p{margin:0;font-size:13px;line-height:1.75;color:#33413c}
+
+.checklist{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.checklist span{font-family:var(--mono);font-size:11.5px;border:1px solid var(--line);background:#fff;padding:5px 10px;color:#33413c}
+.gloss{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 28px;margin-top:18px}
+.gloss div{border-top:1px solid var(--line);padding:10px 0}
+.gloss dt{font-family:var(--mono);font-size:12px;color:var(--machine);font-weight:500}
+.gloss dd{margin:2px 0 0;font-size:13px;line-height:1.7;color:#33413c}
+
+.tier{display:inline-block;font-family:var(--mono);font-size:11px;padding:2px 8px;border-radius:1px}
+.tier.normal{background:var(--bio-soft);color:var(--bio)}
+.tier.critical{background:var(--brass-soft);color:var(--brass)}
+.tier.accident{background:var(--alert-soft);color:var(--alert)}
+
+footer{border-top:1px solid var(--line-strong);padding:30px 0 48px;margin-top:0}
+.foot p{margin:0 0 8px;font-size:12.5px;color:var(--muted);line-height:1.8;max-width:62ch}
+
+@media (max-width:960px){
+  .hero-meta{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .blk-head,.blk-body{grid-template-columns:1fr}
+  .blk-body .side{border-right:0}
+  .grid-2,.view-grid,.safe-grid{grid-template-columns:1fr}
+  .doc-sec{grid-template-columns:1fr}
+  .doc-sec dt{border-right:0;border-bottom:1px solid var(--line)}
+  .gloss{grid-template-columns:1fr}
+}
+@media (max-width:640px){
+  .blk-lead,.factbox p,.doc-sec dd,.view p,.safe p,.gloss dd{font-size:14.5px}
+  .side p{font-size:14px}
+  .tblhint{display:block;font-family:var(--mono);font-size:11px;color:var(--muted);margin:0 0 6px}
+  table{min-width:560px}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *{transition:none!important;animation:none!important}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand"><span class="dot"></span><b>人机混合神经系统</b><span>/ 复杂系统工程 2026</span></div>
+  <div class="topbar-right">
+    <a class="back" href="index.html">← 返回目录</a>
+    <span class="badge">作业四独立页 HW-4</span>
+  </div>
+</div>
+
+<div class="shell">
+
+<header class="hero">
+  <p class="kicker"><span class="bar"></span>吉林大学 · 车辆工程 · 复杂系统工程课程 · 第四次作业</p>
+  <h1 class="hero-title">场景分层 · 场景要素 · 设计运行条件 · 典型场景论述<em>Assignment 4 — Scenario Layering, Scenario Elements, ODC &amp; Representative Scenario</em></h1>
+  <p class="hero-sub">围绕机器增强的人机混合神经系统所处环境，先做场景分层并梳理各层场景要素；再参照 ISO 34503 与自动驾驶设计运行条件（DORAD）框架，设定系统正常运行的设计运行条件（ODC）：运行设计范围、系统状态、人员状态；选取一个典型场景做详细论述，并在作业三 STPA 结论基础上给出风险场景列表。定量阈值待实验定基线，本页只写条件边界与方法。</p>
+  <dl class="hero-meta">
+    <div><dt>作业编号</dt><dd>HW-4（作业四）</dd></div>
+    <div><dt>框架依据</dt><dd>基于场景的系统工程 · ISO 34503 / DORAD</dd></div>
+    <div><dt>所选层级</dt><dd>第四层 · 系统 Systems</dd></div>
+    <div><dt>提交形式</dt><dd>HTML 网页推送</dd></div>
+  </dl>
+</header>
+
+<!-- ===== 一、场景分层 ===== -->
+<section class="blk" id="layering">
+  <div class="blk-head">
+    <div class="blk-no"><b>HW-4</b><i>LAYERING</i></div>
+    <div>
+      <h2 class="blk-title">场景分层</h2>
+      <p class="blk-lead">场景是“在一定环境条件下，参与者为完成既定任务而发生的、具有时间顺序的活动序列”。先按抽象程度区分功能场景、逻辑场景、具体场景三类；再把系统所处任务环境拆成若干环境层，逐层描述要素，避免把场地、人体、交互对象、物理条件、数字链路与临时扰动混在同一层。</p>
+    </div>
+  </div>
+  <div class="blk-body">
+    <aside class="side">
+      <p>场景抽象层次</p>
+      <p>功能场景：自然语言描述任务与目标。</p>
+      <p>逻辑场景：变量与取值区间。</p>
+      <p>具体场景：给定初始条件与参数的实例。</p>
+      <p>环境分层参照自动驾驶场景分层思路，移植到人机混合神经系统任务环境。</p>
+    </aside>
+    <div class="main">
+
+      <div class="view-grid">
+        <div class="view">
+          <h4>功能场景</h4>
+          <div class="sen">FUNCTIONAL SCENARIO</div>
+          <p>最高抽象层：用自然语言描述“在什么类型的环境中，谁为完成什么任务而活动”，只表达意图与目标，不含具体数值与个体参数。</p>
+        </div>
+        <div class="view">
+          <h4>逻辑场景</h4>
+          <div class="sen">LOGICAL SCENARIO</div>
+          <p>中间层：把功能场景展开为一组变量及其取值区间与约束关系（如任务类型、位姿范围、人员状态、环境条件区间），描述一类可运行的场景集合。</p>
+        </div>
+        <div class="view">
+          <h4>具体场景</h4>
+          <div class="sen">CONCRETE SCENARIO</div>
+          <p>最低抽象层：给定具体初始条件、参数取值与参与者状态的单个实例，可直接用于试验、验证与风险复现；作业四选取的典型场景即具体场景实例。</p>
+        </div>
+      </div>
+
+      <h3 class="sec-sub"><span class="no">LAYERS</span>任务环境六层划分</h3>
+      <p class="subnote">由外向内、由静态到动态逐层收敛：场地与任务 → 人体与生理 → 交互对象 → 物理环境 → 数字链路 → 临时扰动。上层要素是下层要素存在的背景。</p>
+      <p class="tblhint" style="margin-top:14px">左右滑动可查看完整表格</p>
+      <div class="tblwrap">
+        <table>
+          <colgroup><col style="width:14%"><col style="width:20%"><col style="width:34%"><col style="width:32%"></colgroup>
+          <thead><tr><th>层级</th><th>层名称</th><th>覆盖内容</th><th>说明</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">L1</td><td>任务与场地层</td><td>场地类型、作业台面与空间布局、被操作对象、任务目标与训练 / 作业规程</td><td>定义系统“在什么地方、做什么类型的事”，是其余各层的背景边界。</td></tr>
+            <tr><td class="mono">L2</td><td>人体与生理层</td><td>使用者肢体部位、神经通道、佩戴位置、生理基线、耐受与疲劳状态</td><td>定义被增强对象的身体条件，直接决定信号可采集性与刺激可承受性。</td></tr>
+            <tr><td class="mono">L3</td><td>交互对象层</td><td>监督者、周边人员、被操作物体、其他设备及其相对位置与运动</td><td>定义闭环回路中除使用者与系统外的所有交互方及其动态。</td></tr>
+            <tr><td class="mono">L4</td><td>物理环境条件层</td><td>光照、温度、噪声、振动、电磁条件、台面 / 场地表面状况</td><td>外部物理条件，影响信号采集、机构运动与人体佩戴舒适度。</td></tr>
+            <tr><td class="mono">L5</td><td>数字与链路层</td><td>通信链路、供能、时钟同步、数据存储与网络条件、定位 / 姿态参考</td><td>支撑闭环时序与数据留存的数字基础设施条件。</td></tr>
+            <tr><td class="mono">L6</td><td>临时扰动层</td><td>突发动作、信号扰动、人员介入、设备临时故障、环境突变</td><td>不在常规 ODC 内、在运行中临时出现的扰动与异常事件，对应降级与风险场景。</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="archwrap">
+        <svg viewBox="0 0 1040 380" role="img" aria-label="任务环境六层分层图：由上至下依次为场地任务、人体生理、交互对象、物理环境、数字链路、临时扰动">
+          <defs>
+            <marker id="d4a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9aa8a1"/></marker>
+          </defs>
+
+          <rect x="60" y="24" width="920" height="44" fill="#fff" stroke="#c6cfc8"/>
+          <text x="84" y="51" font-size="13" font-weight="700" fill="#101a17">L1 任务与场地层</text>
+          <text x="380" y="51" font-size="10.5" fill="#5b6b64" font-family="IBM Plex Mono,monospace">site · task · object · procedure</text>
+
+          <rect x="60" y="78" width="920" height="44" fill="#e7ebe6" stroke="#c6cfc8"/>
+          <text x="84" y="105" font-size="13" font-weight="700" fill="#101a17">L2 人体与生理层</text>
+          <text x="380" y="105" font-size="10.5" fill="#5b6b64" font-family="IBM Plex Mono,monospace">limb · neural channel · baseline · tolerance</text>
+
+          <rect x="60" y="132" width="920" height="44" fill="#d8e1ed" stroke="#274c7c"/>
+          <text x="84" y="159" font-size="13" font-weight="700" fill="#1d3a60">L3 交互对象层</text>
+          <text x="380" y="159" font-size="10.5" fill="#3a567f" font-family="IBM Plex Mono,monospace">supervisor · bystander · object · equipment</text>
+
+          <rect x="60" y="186" width="920" height="44" fill="#d7e8e2" stroke="#146b5a"/>
+          <text x="84" y="213" font-size="13" font-weight="700" fill="#0f4f42">L4 物理环境条件层</text>
+          <text x="380" y="213" font-size="10.5" fill="#3c6a60" font-family="IBM Plex Mono,monospace">light · temp · noise · EM · surface</text>
+
+          <rect x="60" y="240" width="920" height="44" fill="#efe4cb" stroke="#8f6412"/>
+          <text x="84" y="267" font-size="13" font-weight="700" fill="#6b4a0e">L5 数字与链路层</text>
+          <text x="380" y="267" font-size="10.5" fill="#8f6412" font-family="IBM Plex Mono,monospace">link · power · sync · storage</text>
+
+          <rect x="60" y="294" width="920" height="44" fill="#f3ddd9" stroke="#a93a2c"/>
+          <text x="84" y="321" font-size="13" font-weight="700" fill="#7c2a20">L6 临时扰动层</text>
+          <text x="380" y="321" font-size="10.5" fill="#7c2a20" font-family="IBM Plex Mono,monospace">disturbance · intrusion · failure · event</text>
+
+          <path d="M40 46 L40 316" fill="none" stroke="#9aa8a1" stroke-width="1.4" marker-end="url(#d4a)"/>
+          <text x="520" y="362" text-anchor="middle" font-size="11" fill="#5b6b64" font-family="IBM Plex Mono,monospace">由背景边界向动态扰动逐层收敛：场地任务 → 人体生理 → 交互对象 → 物理条件 → 数字链路 → 临时扰动</text>
+        </svg>
+        <p class="arch-cap">图 4-1　任务环境六层分层示意（由背景边界向动态扰动逐层收敛，临时扰动贯穿全层）</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===== 二、场景要素梳理 ===== -->
+<section class="blk" id="elements">
+  <div class="blk-head">
+    <div class="blk-no"><b>HW-4</b><i>ELEMENTS</i></div>
+    <div>
+      <h2 class="blk-title">各场景分层的具体场景要素</h2>
+      <p class="blk-lead">沿上一章六层逐层列出要素、要素含义与取值 / 状态维度；右侧给出与自动驾驶 DORAD ODC 元素的对照，说明本系统要素是由哪一类自动驾驶条件移植、改写而来。取值区间与阈值待实验定基线，表中以 <span class="tba">tba</span> 占位。</p>
+    </div>
+  </div>
+  <div class="blk-body">
+    <aside class="side">
+      <p>要素梳理原则</p>
+      <p>每个要素可被观测或判定；要素取值能区分“允许 / 不允许”。</p>
+      <p>同一要素在逻辑场景中为变量，在具体场景中为取值。</p>
+      <p>对照列仅作方法参照，不照搬道路交通对象。</p>
+    </aside>
+    <div class="main">
+      <p class="tblhint" style="margin-top:14px">左右滑动可查看完整表格</p>
+      <div class="tblwrap">
+        <table>
+          <colgroup><col style="width:11%"><col style="width:19%"><col style="width:36%"><col style="width:21%"><col style="width:13%"></colgroup>
+          <thead><tr><th>层级</th><th>要素</th><th>要素说明</th><th>取值 / 状态维度</th><th>DORAD 对照</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">L1</td><td>场地类型</td><td>系统开展训练或作业的受控场所类型。</td><td>康复训练室 / 作业工位 / 受控居家场景</td><td>区域 / 道路类型</td></tr>
+            <tr><td class="mono">L1</td><td>空间布局</td><td>作业台面、机构运动包络、人员可达位置与净空。</td><td>布局是否固定；包络范围；净空是否标定</td><td>可行驶区域几何</td></tr>
+            <tr><td class="mono">L1</td><td>被操作对象</td><td>训练教具、作业物件或工件。</td><td>重量 / 形状 / 易碎性；是否在可操作范围</td><td>目标物 / 障碍物</td></tr>
+            <tr><td class="mono">L1</td><td>任务规程</td><td>动作类别、重复次数、训练顺序与间歇安排。</td><td>规程是否明确；任务阶段划分</td><td>用例 / 任务</td></tr>
+            <tr><td class="mono">L2</td><td>肢体部位</td><td>本次被增强的身体部位。</td><td>上肢 / 手腕 / 下肢等可增强部位</td><td>人体接口</td></tr>
+            <tr><td class="mono">L2</td><td>神经通道与佩戴</td><td>采集通道、电极佩戴位置与接触条件。</td><td>在位 / 脱落；接触阻抗；通道完好数</td><td>—</td></tr>
+            <tr><td class="mono">L2</td><td>生理基线</td><td>心率、肌电基线、皮肤状态等基础生理条件。</td><td>基线是否落在可接受范围；阈值 <span class="tba">tba</span></td><td>驾乘人员健康状态</td></tr>
+            <tr><td class="mono">L2</td><td>耐受与疲劳</td><td>使用者对训练负荷、刺激与佩戴时长的耐受程度。</td><td>轻 / 中 / 疲劳；耐受余量 <span class="tba">tba</span></td><td>困倦 / 注意力状态</td></tr>
+            <tr><td class="mono">L3</td><td>使用者</td><td>被增强、直接产生意图的主操作者。</td><td>在位；配合度；当前任务角色</td><td>驾驶员 / 后援用户</td></tr>
+            <tr><td class="mono">L3</td><td>监督者</td><td>康复师或作业管理者，承担观察、介入与急停职责。</td><td>在岗 / 离岗；可介入；权限级别</td><td>DDT 后援用户</td></tr>
+            <tr><td class="mono">L3</td><td>周边人员</td><td>旁观者、其他受试者等非闭环参与者。</td><td>位置；是否侵入作业包络；运动趋势</td><td>行人</td></tr>
+            <tr><td class="mono">L3</td><td>其他设备</td><td>教具、外设、相邻样机等。</td><td>位置；运动状态；是否构成干扰</td><td>机动车 / 非机动车 / 障碍物</td></tr>
+            <tr><td class="mono">L4</td><td>光照条件</td><td>自然与人工光源强度、方向及眩光情况。</td><td>照度区间；是否逆光 / 强反射；阈值 <span class="tba">tba</span></td><td>光照</td></tr>
+            <tr><td class="mono">L4</td><td>环境温度</td><td>环境气温对器件与人体佩戴的影响。</td><td>温度区间；阈值 <span class="tba">tba</span></td><td>室外温度</td></tr>
+            <tr><td class="mono">L4</td><td>噪声与振动</td><td>环境噪声与场地振动对信号采集的影响。</td><td>噪声 / 振动等级；阈值 <span class="tba">tba</span></td><td>环境扰动</td></tr>
+            <tr><td class="mono">L4</td><td>电磁条件</td><td>背景电磁干扰对采集与无线链路的影响。</td><td>干扰等级；是否在器件抗扰范围内</td><td>通信 / 传感器环境</td></tr>
+            <tr><td class="mono">L4</td><td>表面状况</td><td>台面 / 地面材质、湿滑与散落物。</td><td>材质；覆盖物；是否存在障碍</td><td>道路表面</td></tr>
+            <tr><td class="mono">L5</td><td>通信链路</td><td>采集—主控—机构—终端之间的链路连通性。</td><td>连通；时延；丢包；阈值 <span class="tba">tba</span></td><td>V2X 连接</td></tr>
+            <tr><td class="mono">L5</td><td>供能条件</td><td>电池电量或有线供电状态。</td><td>电量是否满足剩余任务；功耗水平</td><td>车辆供电依赖</td></tr>
+            <tr><td class="mono">L5</td><td>时钟同步</td><td>上行意图与下行反馈的时序对齐条件。</td><td>同步误差；阈值 <span class="tba">tba</span></td><td>—</td></tr>
+            <tr><td class="mono">L5</td><td>数据留存</td><td>运行记录、校准记录与异常事件的存储和访问条件。</td><td>记录完整；脱敏；分级授权</td><td>—</td></tr>
+            <tr><td class="mono">L6</td><td>突发生理动作</td><td>痉挛、猝然放松等使用者未预期动作。</td><td>是否出现；持续时长；幅度</td><td>参与者突发行为</td></tr>
+            <tr><td class="mono">L6</td><td>信号扰动</td><td>电极干扰、工频 / 运动伪迹等信号异常。</td><td>扰动类型；强度；持续时长</td><td>感知退化</td></tr>
+            <tr><td class="mono">L6</td><td>人员介入</td><td>监督者干预或周边人员侵入等人为介入事件。</td><td>介入方；介入动作；位置</td><td>后援接管</td></tr>
+            <tr><td class="mono">L6</td><td>设备临时故障</td><td>掉线、断电、机构卡滞等临时设备异常。</td><td>故障类型；持续时间；影响链路</td><td>车辆系统失效</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 三、设计运行条件 ODC ===== -->
+<section class="blk" id="odc">
+  <div class="blk-head">
+    <div class="blk-no"><b>HW-4</b><i>ODC</i></div>
+    <div>
+      <h2 class="blk-title">运行设计条件（ODC）设定</h2>
+      <p class="blk-lead">设计运行条件（ODC）是系统设计时确定的、适用于功能运行的各类条件总称，参照 ISO 34503 与 DORAD 框架分为三类：设计运行范围（ODD，外部环境条件）、系统状态、人员状态。系统在 ODC 内方可进入在线闭环；任一条件即将越界时，按作业三降级层次后撤。</p>
+    </div>
+  </div>
+  <div class="blk-body">
+    <aside class="side">
+      <p>ODC 顶层三类</p>
+      <p>① 设计运行范围 ODD：场地、对象、人员、物理与数字外部条件。</p>
+      <p>② 系统状态：自检、模式、信号、解码、运动、刺激、反馈、故障。</p>
+      <p>③ 人员状态：使用者、监督者、周边人员。</p>
+      <p>ODC 边界可带时间属性；越界前应可被监控并触发降级。</p>
+    </aside>
+    <div class="main">
+
+      <h3 class="sec-sub"><span class="no">ODD</span>A. 设计运行范围（外部环境条件）</h3>
+      <p class="subnote">回答“系统可以在什么外部环境里运行”。允许条件即本课程原型的设计边界；越界条件对应待机、柔顺辅助或降级路径。</p>
+      <p class="tblhint" style="margin-top:14px">左右滑动可查看完整表格</p>
+      <div class="tblwrap">
+        <table>
+          <colgroup><col style="width:18%"><col style="width:34%"><col style="width:32%"><col style="width:16%"></colgroup>
+          <thead><tr><th>要素</th><th>允许条件（设计边界）</th><th>不允许 / 越界条件</th><th>追溯</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">场地类型</td><td>受控康复训练室或固定作业工位，边界与流程可标定。</td><td>无固定边界、人流不可控的开放环境。</td><td class="mono">SR-09</td></tr>
+            <tr><td class="mono">作业空间</td><td>台面与机构运动包络已标定，包络内无未识别障碍物。</td><td>包络内存在未识别物体；净空不足。</td><td class="mono">R-11 · SR-03</td></tr>
+            <tr><td class="mono">周边人员</td><td>非授权人员停留在作业包络之外；监督者在岗。</td><td>人员侵入包络未被检出；监督者离岗进行高风险辅助。</td><td class="mono">SR-09</td></tr>
+            <tr><td class="mono">光照</td><td>满足采集与视觉辅助的照度区间，无强反射眩光；区间 <span class="tba">tba</span>。</td><td>过暗 / 过曝、强眩光干扰感知与佩戴检查。</td><td class="mono">SYS-Q-06</td></tr>
+            <tr><td class="mono">温度</td><td>环境气温在器件与人体可接受区间；区间 <span class="tba">tba</span>。</td><td>超出器件规格或人体耐受区间。</td><td class="mono">SYS-P-05</td></tr>
+            <tr><td class="mono">噪声 / 振动</td><td>环境噪声与振动不显著劣化信号质量；等级 <span class="tba">tba</span>。</td><td>强振动 / 噪声使信号质量持续低于门限。</td><td class="mono">SR-01</td></tr>
+            <tr><td class="mono">电磁环境</td><td>背景电磁干扰在器件抗扰范围内。</td><td>强干扰导致采集或链路不可用。</td><td class="mono">SYS-Q-06</td></tr>
+            <tr><td class="mono">通信链路</td><td>链路连通，时延与丢包在允许区间；区间 <span class="tba">tba</span>。</td><td>链路中断或时延 / 丢包越界。</td><td class="mono">SR-05</td></tr>
+            <tr><td class="mono">供能条件</td><td>电量满足本次任务剩余时长，低电量提前告警。</td><td>电量不足以完成当前任务且无补给条件。</td><td class="mono">SR-05</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="sec-sub"><span class="no">SYS</span>B. 系统状态</h3>
+      <p class="subnote">回答“系统自身处于什么状态才允许运行”。系统应持续监控自身状态；不满足时不进入或退出在线闭环。</p>
+      <p class="tblhint" style="margin-top:14px">左右滑动可查看完整表格</p>
+      <div class="tblwrap">
+        <table>
+          <colgroup><col style="width:18%"><col style="width:34%"><col style="width:32%"><col style="width:16%"></colgroup>
+          <thead><tr><th>要素</th><th>允许状态</th><th>不允许 / 退出状态</th><th>追溯</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">自检状态</td><td>上电完成自检：电极阻抗、链路、限位、急停链路均正常。</td><td>自检未通过或自检项缺失；禁止主动驱动。</td><td class="mono">SR-10</td></tr>
+            <tr><td class="mono">运行模式</td><td>在线闭环 / 柔顺辅助 / 被动支撑 / 维护校准，模式互锁明确。</td><td>校准、维护模式下主动驱动或输出刺激。</td><td class="mono">SR-10</td></tr>
+            <tr><td class="mono">信号质量</td><td>信噪比与接触阻抗在允许区间。</td><td>质量低于门限仍输出驱动指令。</td><td class="mono">SR-01</td></tr>
+            <tr><td class="mono">解码置信度</td><td>意图置信度高于门限，类别在已识别范围内。</td><td>置信度不足或未识别类别仍默认推断动作。</td><td class="mono">SR-01 / SR-02</td></tr>
+            <tr><td class="mono">运动状态</td><td>机构位置、速度、力在软件与机械限位之内。</td><td>幅度 / 力 / 方向越界；限位未独立校验。</td><td class="mono">SR-03</td></tr>
+            <tr><td class="mono">刺激状态</td><td>刺激强度与时长在限幅内。</td><td>强度 / 时长超限或刺激回路失控。</td><td class="mono">SR-04</td></tr>
+            <tr><td class="mono">反馈一致性</td><td>反馈与实际动作状态一致且可辨识。</td><td>反馈缺失、错位被当作正常继续运行。</td><td class="mono">SR-06</td></tr>
+            <tr><td class="mono">故障与降级</td><td>监控项正常；越界时按层次进入降级路径。</td><td>失效后无法进入被动安全状态；上电自恢复。</td><td class="mono">SR-05</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="sec-sub"><span class="no">PERS</span>C. 人员状态</h3>
+      <p class="subnote">回答“相关人员处于什么状态才允许运行”。分使用者、监督者、周边人员三组；状态不可判定时按不满足条件处理。</p>
+      <p class="tblhint" style="margin-top:14px">左右滑动可查看完整表格</p>
+      <div class="tblwrap">
+        <table>
+          <colgroup><col style="width:16%"><col style="width:20%"><col style="width:36%"><col style="width:28%"></colgroup>
+          <thead><tr><th>分组</th><th>要素</th><th>允许状态</th><th>不允许 / 退出状态</th></tr></thead>
+          <tbody>
+            <tr><td class="mono" rowspan="4">使用者</td><td>在位与位姿</td><td>目标肢体在位、佩戴到位、姿态在允许范围。</td><td>未佩戴好、肢体脱开或位姿超出允许范围。</td></tr>
+            <tr><td>注意力与配合度</td><td>注意力集中，能理解提示并配合训练 / 作业。</td><td>明显分心、困倦或拒绝配合；转柔顺辅助或暂停。</td></tr>
+            <tr><td>生理耐受</td><td>心率、肌电、皮肤状态在可接受基线；基线 <span class="tba">tba</span>。</td><td>出现不适、疼痛或生理指标越界；立即停止。</td></tr>
+            <tr><td>知情同意与匹配度</td><td>已取得知情同意，身体条件与任务类别匹配。</td><td>未同意、身体条件与任务不匹配。</td></tr>
+            <tr><td class="mono" rowspan="2">监督者</td><td>在岗可介入</td><td>监督者在岗，可观察运行状态并使用急停。</td><td>监督者离岗时运行高风险辅助任务。</td></tr>
+            <tr><td>权限与留痕</td><td>监督级介入权限明确，操作与急停留痕；急停硬链路可用。</td><td>急停链路失效或被软件旁路。</td></tr>
+            <tr><td class="mono">周边人员</td><td>位置与侵入</td><td>停留在作业包络之外，运动不接近机构。</td><td>进入包络未被检出；侵入后机构未降速或停止。</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="grid-2" style="margin-top:22px">
+        <div class="factbox">
+          <h4>ODC 的时间属性</h4>
+          <p>部分边界带时间属性，如“连续疲劳不超过约定时长”“低电量剩余时长应大于当前任务预估时长”；具体时长阈值 <span class="tba">tba</span>，由后续试验标定。</p>
+        </div>
+        <div class="factbox">
+          <h4>越界处理原则</h4>
+          <p>系统持续监控 ODC 与自身状态；在即将不满足 ODC 时触发提示、柔顺辅助或降级；不满足条件时不进入在线闭环，危险状态进入被动安全或急停断开（衔接作业三 SR-01～SR-10）。</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===== 四、典型场景详细论述 ===== -->
+<section class="blk" id="scenario">
+  <div class="blk-head">
+    <div class="blk-no"><b>HW-4</b><i>SCENARIO</i></div>
+    <div>
+      <h2 class="blk-title">典型场景详细论述：上肢康复训练柔顺辅助</h2>
+      <p class="blk-lead">选取作业二确认的场景一“上肢康复训练”作为典型具体场景：在受控康复训练室中，使用者通过上肢意图动作触发外骨骼完成一组屈曲—伸展柔顺辅助训练，监督者在岗可介入，系统在限位与刺激限幅内闭环运行并回注感觉反馈。</p>
+    </div>
+  </div>
+  <div class="blk-body">
+    <aside class="side">
+      <p>场景句式</p>
+      <p>“在 xx 环境下，xx 参与者完成 xx 任务”。</p>
+      <p>本场景对应作业二场景一，复用作业三五子系统与安全降级层次。</p>
+      <p>成功度量 MoE / MoS 与阈值待试验标定。</p>
+    </aside>
+    <div class="main">
+
+      <div class="doc">
+        <div class="doc-head"><span class="tag sc">CONCRETE</span><h3>典型场景 S-01 · 上肢康复训练柔顺辅助</h3><span class="meta">具体场景实例 / 系统层</span></div>
+        <dl class="doc-sec">
+          <dt><b>场景陈述</b>Scenario statement</dt>
+          <dd>
+            <p>在受控康复训练室、台面与机构包络已标定、使用者上肢在位且系统自检通过的条件下，使用者通过上肢屈曲 / 伸展意图触发外骨骼柔顺辅助完成一组训练动作；监督者在岗观察并可随时介入；系统在软件与机械限位、刺激限幅内闭环运行，把机构位置与接触状态编码为感觉反馈回注使用者，训练结束后记录全过程供复盘。</p>
+          </dd>
+        </dl>
+        <dl class="doc-sec">
+          <dt><b>参与角色</b>Actors</dt>
+          <dd>
+            <p><span class="lab">使用者</span>康复受试者，目标上肢佩戴采集与反馈接口，产生意图并接受柔顺辅助与感觉反馈。</p>
+            <p><span class="lab">监督者</span>康复师，在岗观察信号质量、动作幅度与使用者状态，可发起监督级急停或暂停。</p>
+            <p><span class="lab">系统</span>作业三五子系统：神经信号采集、意图解码、机器增强与反馈刺激、执行协同控制、供能通信与安全监控。</p>
+            <p><span class="lab">作业对象与环境</span>训练教具；受控康复训练室，周边人员在包络之外。</p>
+          </dd>
+        </dl>
+        <dl class="doc-sec">
+          <dt><b>前置条件</b>Preconditions</dt>
+          <dd>
+            <p><span class="lab">ODD 满足</span>场地、空间、周边人员、光照、温度、噪声振动、电磁、链路与供能条件均在第三章允许边界内。</p>
+            <p><span class="lab">系统状态满足</span>自检通过，处于在线闭环（或柔顺辅助）模式；信号质量、解码置信度、限位与刺激限幅、反馈一致性均正常；急停硬链路可用。</p>
+            <p><span class="lab">人员状态满足</span>使用者在位位姿正确、注意力集中、生理基线正常且已知情同意；监督者在岗；周边人员未侵入。</p>
+          </dd>
+        </dl>
+      </div>
+
+      <!-- 时序图 -->
+      <h3 class="sec-sub"><span class="no">FLOW</span>场景时序与信息流</h3>
+      <div class="archwrap">
+        <svg viewBox="0 0 1040 320" role="img" aria-label="典型场景时序：准备自检、意图采集、解码仲裁、柔顺辅助、反馈回注、复盘记录，异常分支进入降级">
+          <defs>
+            <marker id="d4f" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9aa8a1"/></marker>
+            <marker id="d4fg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#146b5a"/></marker>
+            <marker id="d4fr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#a93a2c"/></marker>
+          </defs>
+
+          <rect x="24" y="60" width="130" height="86" fill="#e7e1ef" stroke="#5b4a7d" stroke-width="1.2"/>
+          <text x="89" y="92" text-anchor="middle" font-size="13.5" font-weight="700" fill="#3f3258">准备与自检</text>
+          <text x="89" y="114" text-anchor="middle" font-size="10.5" fill="#5b4a7d" font-family="IBM Plex Mono,monospace">self-check · donning</text>
+
+          <rect x="196" y="60" width="130" height="86" fill="#fff" stroke="#8f6412" stroke-width="1"/>
+          <text x="261" y="92" text-anchor="middle" font-size="13.5" font-weight="600" fill="#101a17">意图采集</text>
+          <text x="261" y="114" text-anchor="middle" font-size="10.5" fill="#5b6b64" font-family="IBM Plex Mono,monospace">signal acquisition</text>
+
+          <rect x="368" y="60" width="130" height="86" fill="#fff" stroke="#274c7c" stroke-width="1"/>
+          <text x="433" y="92" text-anchor="middle" font-size="13.5" font-weight="600" fill="#101a17">解码与仲裁</text>
+          <text x="433" y="114" text-anchor="middle" font-size="10.5" fill="#5b6b64" font-family="IBM Plex Mono,monospace">decode · arbitration</text>
+
+          <rect x="540" y="60" width="130" height="86" fill="#d8e1ed" stroke="#274c7c" stroke-width="1.2"/>
+          <text x="605" y="92" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1d3a60">柔顺辅助</text>
+          <text x="605" y="114" text-anchor="middle" font-size="10.5" fill="#3a567f" font-family="IBM Plex Mono,monospace">assist · exoskeleton</text>
+
+          <rect x="712" y="60" width="130" height="86" fill="#d7e8e2" stroke="#146b5a" stroke-width="1.2"/>
+          <text x="777" y="92" text-anchor="middle" font-size="13.5" font-weight="700" fill="#0f4f42">反馈回注</text>
+          <text x="777" y="114" text-anchor="middle" font-size="10.5" fill="#3c6a60" font-family="IBM Plex Mono,monospace">feedback · stimulation</text>
+
+          <rect x="872" y="60" width="130" height="86" fill="#fff" stroke="#8f6412" stroke-width="1"/>
+          <text x="937" y="92" text-anchor="middle" font-size="13.5" font-weight="600" fill="#101a17">记录与复盘</text>
+          <text x="937" y="114" text-anchor="middle" font-size="10.5" fill="#5b6b64" font-family="IBM Plex Mono,monospace">log · review</text>
+
+          <path d="M154 103 L192 103" fill="none" stroke="#9aa8a1" stroke-width="1.6" marker-end="url(#d4f)"/>
+          <path d="M326 103 L364 103" fill="none" stroke="#9aa8a1" stroke-width="1.6" marker-end="url(#d4f)"/>
+          <path d="M498 103 L536 103" fill="none" stroke="#274c7c" stroke-width="1.8" marker-end="url(#d4f)"/>
+          <path d="M670 103 L708 103" fill="none" stroke="#146b5a" stroke-width="1.8" marker-end="url(#d4fg)"/>
+          <path d="M842 103 L868 103" fill="none" stroke="#9aa8a1" stroke-width="1.6" marker-end="url(#d4f)"/>
+
+          <rect x="368" y="210" width="474" height="60" fill="#f3ddd9" stroke="#a93a2c" stroke-width="1" stroke-dasharray="6 4"/>
+          <text x="500" y="236" text-anchor="middle" font-size="13" font-weight="700" fill="#a93a2c">异常分支：监控项越界</text>
+          <text x="500" y="256" text-anchor="middle" font-size="11" fill="#7c2a20">信号 / 置信度 / 限位 / 刺激 / 反馈 / 侵入 / 断链 → 柔顺辅助 → 被动支撑 → 急停断开</text>
+          <path d="M433 146 L433 206" fill="none" stroke="#a93a2c" stroke-width="1.4" stroke-dasharray="4 4" marker-end="url(#d4fr)"/>
+          <path d="M605 146 L605 206" fill="none" stroke="#a93a2c" stroke-width="1.4" stroke-dasharray="4 4" marker-end="url(#d4fr)"/>
+          <path d="M777 146 L777 206" fill="none" stroke="#a93a2c" stroke-width="1.4" stroke-dasharray="4 4" marker-end="url(#d4fr)"/>
+        </svg>
+        <p class="arch-cap">图 4-2　典型场景 S-01 时序：正常闭环链与异常降级分支（衔接作业三降级层次）</p>
+      </div>
+
+      <h3 class="sec-sub"><span class="no">DETAIL</span>阶段、活动与系统行为</h3>
+      <p class="tblhint" style="margin-top:14px">左右滑动可查看完整表格</p>
+      <div class="tblwrap">
+        <table>
+          <colgroup><col style="width:16%"><col style="width:30%"><col style="width:38%"><col style="width:16%"></colgroup>
+          <thead><tr><th>阶段</th><th>参与者活动</th><th>系统行为与信息流</th><th>退出 / 转分支条件</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">① 准备自检</td><td>使用者佩戴接口；监督者检查场地与教具。</td><td>完成上电自检与电极阻抗检查，读取链路、限位、急停链路状态；自检通过后进入待命。</td><td>自检未通过 → 维护 / 校准模式，禁止主动驱动。</td></tr>
+            <tr><td class="mono">② 意图采集</td><td>使用者按规程产生屈曲 / 伸展意图动作。</td><td>采集神经 / 肌电信号，输出信噪比与接触状态；质量不足时提示重贴。</td><td>信号质量持续低于门限 → 柔顺辅助或暂停（SR-01）。</td></tr>
+            <tr><td class="mono">③ 解码仲裁</td><td>使用者保持自主运动意愿。</td><td>特征提取与分类 / 回归，输出动作类别或参数并附置信度；人机仲裁融合自主运动与辅助量。</td><td>置信度不足 / 类别未识别 → 不动作，请求人工确认（SR-02）。</td></tr>
+            <tr><td class="mono">④ 柔顺辅助</td><td>使用者在辅助下完成屈曲—伸展。</td><td>仲裁结果转为机构控制指令，软件限位与独立机械限位双通道校验；辅助顺应人的自主运动，不对抗。</td><td>位置 / 速度 / 力越界 → 停止运动（SR-03）；周边侵入 → 降速 / 停止（SR-09）。</td></tr>
+            <tr><td class="mono">⑤ 反馈回注</td><td>使用者感知机构状态并调整动作。</td><td>状态感知获取位置 / 力 / 接触，编码为触觉 / 力觉提示，经限幅后回注；上下行时序对齐。</td><td>反馈缺失 / 错位 → 明确告警，不静默继续（SR-06）；刺激超限 → 硬件切断（SR-04）。</td></tr>
+            <tr><td class="mono">⑥ 记录复盘</td><td>监督者结束训练，查看过程记录。</td><td>留存校准记录、指令与反馈事件、异常事件；数据脱敏分级存储，可导出复盘。</td><td>断链 / 断电 → 被动安全状态，上电不自恢复，需人工确认（SR-05）。</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="sec-sub"><span class="no">MOS</span>成功度量（MoE / MoS）</h3>
+      <div class="grid-2" style="margin-top:14px">
+        <div class="factbox">
+          <h4>效果度量 MoE</h4>
+          <p>完成规程规定的试次与动作幅度；辅助顺应使用者自主运动、不产生对抗；使用者能辨识反馈状态；训练过程无超限刺激与安全事件。具体达标基线 <span class="tba">tba</span>，由对照试验统计。</p>
+        </div>
+        <div class="factbox">
+          <h4>适用性度量 MoS</h4>
+          <p>佩戴与启动流程可在监督者协助下完成；异常可被使用者与监督者感知；记录完整可追溯；ODC 边界与降级路径在本场景下被实际触发验证。</p>
+        </div>
+      </div>
+
+      <h3 class="sec-sub"><span class="no">LEVELS</span>该场景在三层抽象中的写法</h3>
+      <p class="tblhint" style="margin-top:14px">左右滑动可查看完整表格</p>
+      <div class="tblwrap">
+        <table>
+          <colgroup><col style="width:20%"><col style="width:50%"><col style="width:30%"></colgroup>
+          <thead><tr><th>抽象层</th><th>场景表述</th><th>参数特征</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">功能场景</td><td>在受控康复场所，使用者在机器辅助下完成上肢康复训练。</td><td>自然语言；无具体数值。</td></tr>
+            <tr><td class="mono">逻辑场景</td><td>上肢在位、佩戴到位，信号质量与置信度在允许区间，监督者在岗，光照 / 温度 / 链路在允许区间内；系统提供柔顺辅助并回注反馈。</td><td>变量与取值区间；阈值 <span class="tba">tba</span>。</td></tr>
+            <tr><td class="mono">具体场景</td><td>本页 S-01：某受试者在训练室完成一组屈曲—伸展试次，机构包络、教具、动作顺序与初始位姿均已给定，作为试验与风险复现实例。</td><td>具体初始条件与参数；可直接用于用例。</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="sec-sub"><span class="no">TRACE</span>需求追溯</h3>
+      <p class="subnote">本场景向上衔接作业二相关方需求、作业三系统需求与安全需求；场景用例设计与验证沿此追溯链回溯。</p>
+      <div class="checklist">
+        <span>R-01 意图可理解</span><span>R-02 结果可感觉</span><span>R-03 出错可停</span><span>R-07 协同不对抗</span><span>R-11 不伤及他人</span>
+        <span>SYS-F-01～06</span><span>SR-01 信号置信度门控</span><span>SR-03 双通道限位</span><span>SR-04 刺激限流</span><span>SR-06 反馈一致性</span><span>SR-09 侵入检测</span>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===== 五、风险场景列表 ===== -->
+<section class="blk" id="risk">
+  <div class="blk-head">
+    <div class="blk-no"><b>HW-4</b><i>RISK</i></div>
+    <div>
+      <h2 class="blk-title">典型运行场景安全风险分析 · 风险场景列表</h2>
+      <p class="blk-lead">延伸项：在作业三 STPA 危险（H-01～H-06）与不安全控制动作（UCA-01～UCA-09）基础上，把异常情形落到具体风险场景。按正常场景、临界场景、事故场景三档分级；风险等级为本课程原型阶段的初判，后续以概率与严重度方法量化。</p>
+    </div>
+  </div>
+  <div class="blk-body">
+    <aside class="side">
+      <p>场景分级</p>
+      <p><span class="tier normal">正常</span> ODC 内闭环运行。</p>
+      <p><span class="tier critical">临界</span> 接近边界，可通过降级恢复。</p>
+      <p><span class="tier accident">事故</span> 可能导致伤害 / 损失，需安全需求拦截。</p>
+      <p>风险场景与作业三 SR-01～SR-10 一一对应。</p>
+    </aside>
+    <div class="main">
+      <p class="tblhint" style="margin-top:14px">左右滑动可查看完整表格</p>
+      <div class="tblwrap">
+        <table>
+          <colgroup><col style="width:9%"><col style="width:12%"><col style="width:25%"><col style="width:20%"><col style="width:17%"><col style="width:17%"></colgroup>
+          <thead><tr><th>编号</th><th>档位</th><th>风险场景描述</th><th>触发条件</th><th>关联危险 / 安全需求</th><th>兜底策略</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">RS-01</td><td><span class="tier normal">正常</span></td><td>上肢康复训练闭环正常完成一组试次。</td><td>ODC 全部满足，自检通过，人员状态正常。</td><td class="mono">基准场景</td><td>在线闭环运行，记录过程供复盘。</td></tr>
+            <tr><td class="mono">RS-02</td><td><span class="tier critical">临界</span></td><td>信号质量下降但未掉线，存在误判苗头。</td><td>电极阻抗升高、轻微运动 / 工频伪迹。</td><td class="mono">H-01 · SR-01</td><td>降柔顺辅助，提示重贴；质量不恢复则暂停。</td></tr>
+            <tr><td class="mono">RS-03</td><td><span class="tier critical">临界</span></td><td>解码置信度不足或意图类别模糊。</td><td>新模式、动作不典型、样本覆盖不足。</td><td class="mono">H-01 · SR-01 / SR-02</td><td>不输出驱动，请求人工确认，不做默认推断。</td></tr>
+            <tr><td class="mono">RS-04</td><td><span class="tier critical">临界</span></td><td>周边人员进入作业空间附近。</td><td>旁观者靠近机构包络或教具区域。</td><td class="mono">H-02 · SR-09</td><td>侵入检测触发降速或停止，监督者介入清场。</td></tr>
+            <tr><td class="mono">RS-05</td><td><span class="tier accident">事故</span></td><td>伪迹被解码为意图，机构误触发动作。</td><td>信号扰动被模型误分类为已知动作。</td><td class="mono">H-01 · UCA-02 · SR-01 / SR-02</td><td>信号质量与置信度联合门控拦截；未识别类别兜底不动作。</td></tr>
+            <tr><td class="mono">RS-06</td><td><span class="tier accident">事故</span></td><td>机构动作幅度 / 力 / 方向越界，冲击或夹挤。</td><td>指令越界或限位校验失效。</td><td class="mono">H-02 · UCA-03 · SR-03</td><td>软件限位与独立机械限位双通道校验，越界即停。</td></tr>
+            <tr><td class="mono">RS-07</td><td><span class="tier accident">事故</span></td><td>反馈刺激强度 / 时长超限。</td><td>刺激回路失控或限幅失效。</td><td class="mono">H-03 · UCA-04 · SR-04</td><td>独立硬件限流与超时断开，超限即切断。</td></tr>
+            <tr><td class="mono">RS-08</td><td><span class="tier accident">事故</span></td><td>断链 / 断电，机构失去保持能力。</td><td>通信丢失、供电失效或关键模块掉线。</td><td class="mono">H-04 · UCA-06 · SR-05</td><td>进入被动安全状态；上电不自恢复，需人工确认。</td></tr>
+            <tr><td class="mono">RS-09</td><td><span class="tier accident">事故</span></td><td>反馈缺失或错位，使用者误判动作状态。</td><td>反馈链路故障或编码错误。</td><td class="mono">H-06 · UCA-07 · SR-06</td><td>一致性校验；反馈缺失明确告警，不静默继续。</td></tr>
+            <tr><td class="mono">RS-10</td><td><span class="tier accident">事故</span></td><td>急停失效，人工监督无法拦截危险。</td><td>急停链路被软件旁路或硬件失效。</td><td class="mono">H-04 · UCA-08 · SR-07</td><td>急停硬链路独立于主控，触发后切断主动驱动，不可软件覆盖。</td></tr>
+            <tr><td class="mono">RS-11</td><td><span class="tier critical">临界</span></td><td>使用者疲劳或出现不适，耐受余量下降。</td><td>训练时长累积、心率 / 肌电 / 皮肤状态越界。</td><td class="mono">L-1 · 人员状态 ODC</td><td>转柔顺辅助或被动支撑，必要时停止并记录。</td></tr>
+            <tr><td class="mono">RS-12</td><td><span class="tier accident">事故</span></td><td>生理数据被未授权访问或外发。</td><td>权限不清、访问控制缺失。</td><td class="mono">H-05 · UCA-09 · SR-08</td><td>分级授权、脱敏留存与访问审计，原始数据不公开。</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="sec-sub"><span class="no">CHECK</span>场景与条件质量自检</h3>
+      <div class="checklist">
+        <span>分层互斥 · 要素可观测</span><span>功能 / 逻辑 / 具体三层一致</span><span>ODC 三类齐全（范围 / 系统 / 人员）</span><span>允许与越界条件成对描述</span>
+        <span>典型场景含前置 · 时序 · 退出 · 度量</span><span>风险场景可追溯 SR</span><span>阈值待标定 · 不写未经验证数值</span>
+      </div>
+
+      <h3 class="sec-sub"><span class="no">GLOSS</span>缩写表</h3>
+      <dl class="gloss">
+        <div><dt>Scenario</dt><dd>场景：一定环境条件下，参与者为完成任务而发生的有序活动序列。</dd></div>
+        <div><dt>Functional / Logical / Concrete</dt><dd>功能 / 逻辑 / 具体场景，按抽象程度划分，见第一章。</dd></div>
+        <div><dt>ODD</dt><dd>Operational Design Domain，设计运行范围：功能运行的外部环境条件。</dd></div>
+        <div><dt>ODC</dt><dd>Operational Design Condition，设计运行条件：ODD、系统状态、人员状态及其他必要条件的总称。</dd></div>
+        <div><dt>DORAD</dt><dd>智能网联汽车自动驾驶系统设计运行条件参考文件；本页借其顶层分类与要素梳理思路。</dd></div>
+        <div><dt>ISO 34503</dt><dd>道路车辆 自动化驾驶系统 设计运行条件（ODD）分类框架国际标准。</dd></div>
+        <div><dt>SOTIF</dt><dd>预期功能安全；关注功能局限与可预见误用导致的风险场景。</dd></div>
+        <div><dt>MoE / MoS</dt><dd>效果度量 / 适用性度量，见作业二与本章典型场景。</dd></div>
+        <div><dt>STPA / SR</dt><dd>系统理论过程分析与安全需求，见作业三页面 SR-01～SR-10。</dd></div>
+        <div><dt>HMNS</dt><dd>Human-Machine Hybrid Nervous System，人机混合神经系统（本课题）。</dd></div>
+      </dl>
+
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="foot">
+    <p><span class="mono">作业四 · assignment-4.html</span> 与目录页 <a href="index.html">index.html</a>、作业一 <a href="assignment-1.html">assignment-1.html</a>、作业二 <a href="assignment-2.html">assignment-2.html</a>、作业三 <a href="assignment-3.html">assignment-3.html</a> 同属一个仓库、同一 Pages 链接，是互相独立的页面。</p>
+    <p>本页定量阈值待实验定基线；风险场景分级为课程原型阶段的概念性初判，进入临床或真实作业前须补充合规评审、概率—严重度评估与专项安全验证。</p>
+  </div>
+</footer>
+
+</div>
+</body>
+</html>
